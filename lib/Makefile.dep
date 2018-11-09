@@ -1,0 +1,3 @@
+cmpsc311_capture.o: cmpsc311_capture.c cmpsc311_capture.h cmpsc311_log.h
+cmpsc311_uncapture.o: cmpsc311_uncapture.c cmpsc311_log.h \
+  cmpsc311_capture.h
