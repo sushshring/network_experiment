@@ -180,6 +180,49 @@ int cmpsc311_client_connect(unsigned char *ip, uint16_t port) {
 
 ////////////////////////////////////////////////////////////////////////////////
 //
+// Function     : cmpsc311_client_connect_udp
+// Description  : Connect a client socket for network communication over UDP
+//
+// Inputs       : ip - the IP address string for the client
+//                port - the port number of the service
+// Outputs      : socket file handle if successful, -1 if failure
+
+int cmpsc311_client_connect_udp(unsigned char *ip, uint16_t port) {
+
+	// Local variables
+	int sock;
+	struct sockaddr_in caddr;
+
+	// Check to make sure you have a good IP address
+	caddr.sin_family = AF_INET;
+	caddr.sin_port = htons(port);
+	if (inet_aton((char *)ip, &caddr.sin_addr) == 0) {
+		// Error out
+		logMessage(LOG_ERROR_LEVEL, "CMPSC311 client unable to interpret IP address [%s]", ip);
+		return (-1);
+	}
+
+	// Create the socket
+	if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+		// Error out
+		logMessage(LOG_ERROR_LEVEL, "CMPSC311 client socket() failed : [%s]", strerror(errno));
+		return (-1);
+	}
+
+	// Now connect to the server
+	if (connect(sock, (const struct sockaddr *)&caddr, sizeof(struct sockaddr)) == -1) {
+		// Error out
+		logMessage(LOG_ERROR_LEVEL, "CMPSC311 client connect() failed : [%s]", strerror(errno));
+		return (-1);
+	}
+
+	// Return the socket
+	return (sock);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
 // Function     : cmpsc311_send_bytes
 // Description  : Send a specific length of bytes to socket
 //

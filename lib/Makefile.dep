@@ -1,3 +1,19 @@
+cmpsc311_log.o: cmpsc311_log.c cmpsc311_log.h cmpsc311_util.h
+cmpsc311_util.o: cmpsc311_util.c cmpsc311_util.h cmpsc311_log.h
+cmpsc311_hashtable.o: cmpsc311_hashtable.c cmpsc311_hashtable.h \
+ cmpsc311_log.h cmpsc311_util.h
+cmpsc311_cache.o: cmpsc311_cache.c cmpsc311_cache.h cmpsc311_log.h \
+ cmpsc311_util.h cmpsc311_hashtable.h
+cmpsc311_network.o: cmpsc311_network.c cmpsc311_log.h cmpsc311_network.h \
+ cmpsc311_util.h
+cmpsc311_opcode.o: cmpsc311_opcode.c cmpsc311_log.h cmpsc311_util.h \
+ cmpsc311_opcode.h
 cmpsc311_capture.o: cmpsc311_capture.c cmpsc311_capture.h cmpsc311_log.h
+cmpsc311_unittest.o: cmpsc311_unittest.c cmpsc311_cache.h \
+ cmpsc311_hashtable.h cmpsc311_log.h cmpsc311_network.h cmpsc311_opcode.h \
+ cmpsc311_util.h cmpsc311_unittest.h
 cmpsc311_uncapture.o: cmpsc311_uncapture.c cmpsc311_log.h \
-  cmpsc311_capture.h
+ cmpsc311_capture.h
+utest311.o: utest311.c cmpsc311_log.h cmpsc311_util.h \
+ cmpsc311_hashtable.h cmpsc311_cache.h cmpsc311_network.h \
+ cmpsc311_opcode.h

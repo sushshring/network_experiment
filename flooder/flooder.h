@@ -2,9 +2,9 @@
 // Created by sps5394 on 11/7/18.
 //
 
-#ifndef CLIENT_SERVER_H
-#define CLIENT_SERVER_H
-#define MAX_FILENAME 128
+#ifndef CLIENT_FLOODER_H
+#define CLIENT_FLOODER_H
+
 #include <cmpsc311_network.h>
 #include <cmpsc311_log.h>
 #include <stdlib.h>
@@ -13,30 +13,21 @@
 #include "proto.h"
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Function     : server_create
-// Description  : Creates the server on the port listed
+// Function     : flooder_create
+// Description  : Creates the flooder on the sink address
 //
-// Inputs       : port: Port of the server for TCP connections
+// Inputs       : port: Port of the flooder for TCP connections
+//                flooder_type: Type of the flooder. 1: self loop. 2: packet-sink
 // Outputs      : socketfh if successful, -1 if failure
-int server_create(int port);
+int flooder_create(char *addr, int port, int flooder_type);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Function     : server_run
-// Description  : Starts the server and listens for any incoming connections
+// Function     : flooder_run
+// Description  : Starts the flooder
 // Inputs       : socketfh: File handle of connected socket
 // Outputs      : 0 if successful, -1 if failure
-int server_run(int socketfh);
+int flooder_run(int socketfh);
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// Function     : server_func
-// Description  : Thread function to respond to a new client
-// Inputs       : arg: File handle of connected socket
-// Outputs      : 0 if successful, -1 if failure
-void *server_func(void *arg);
 
-void *exit_connection(int sockfd, ProtoMsg *msg, const unsigned char *marshallBuffer);
-          // Cleans up connection
-
-#endif //CLIENT_SERVER_H
+#endif //CLIENT_flooder_H
