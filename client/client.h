@@ -30,8 +30,8 @@
 
 // GLOBAL VARIABLES
 int timing_logfh;
-struct timespec tstart={0,0};
-struct timespec tend={0,0};
+extern struct timespec tstart;
+extern struct timespec tend;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

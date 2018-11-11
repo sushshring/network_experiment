@@ -107,7 +107,7 @@ void *exit_connection(int sockfd, ProtoMsg *msg, const unsigned char *marshallBu
   bzero(msg, sizeof(ProtoMsg));
   msg->msgType = FILE_COMPLETE;
   marshall(msg, (unsigned char *) marshallBuffer);
-  while (!cmpsc311_send_bytes(sockfd, sizeof(ProtoMsg), (unsigned char *) marshallBuffer));
+  cmpsc311_send_bytes(sockfd, sizeof(ProtoMsg), (unsigned char *) marshallBuffer);
   close(sockfd);
   return NULL;
 }

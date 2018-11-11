@@ -72,6 +72,7 @@ int main(int argc, char *argv[]) {
   }
 
   while (1) {
+    logMessage(LOG_INFO_LEVEL, "New client\n");
     if (
       ( socketfh = client_connect(
         (unsigned char *) argv[optind],
@@ -84,5 +85,6 @@ int main(int argc, char *argv[]) {
       logMessage(LOG_ERROR_LEVEL, "Client had error\n");
       return ( -1 );
     }
+    logMessage(LOG_INFO_LEVEL, "Client completed run\n");
   }
 }

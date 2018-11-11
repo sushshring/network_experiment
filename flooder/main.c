@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     return ( -1 );
   }
 
-  if (( socketfh = flooder_create(argv[optind], atoi(argv[optind + 1]), flooder_type) == -1 )) {
+  if (( socketfh = flooder_create(argv[optind], atoi(argv[optind + 1]), flooder_type)) == -1 ) {
     logMessage(LOG_ERROR_LEVEL, "flooder failed to connect\n");
     return ( -1 );
   }

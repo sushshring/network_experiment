@@ -4,6 +4,9 @@
 
 #include "client.h"
 
+struct timespec tstart = {0,0};
+struct timespec tend = {0, 0};
+
 int client_connect(unsigned char *server_addr, uint16_t port) {
   //
   //
@@ -40,7 +43,6 @@ int client_run(int socketfh) {
 
   logMessage(LOG_INFO_LEVEL, "Requesting file\n");
   // Request file
-  log_request_start();
   bzero(&msg, sizeof(ProtoMsg));
   msg.msgType = REQ_FILE;
   memcpy(msg.data, FILENAME, strlen(FILENAME));
@@ -59,6 +61,7 @@ int client_run(int socketfh) {
   // Read file data
   while (fileavlb) {
     // Wait for block
+    log_request_start();
     logMessage(LOG_INFO_LEVEL, "Waiting for block. Currently read %d bytes\n", readBytes);
     bzero(&msg, sizeof(ProtoMsg));
     cmpsc311_read_bytes(socketfh, sizeof(ProtoMsg), marshallBuffer);
@@ -75,6 +78,7 @@ int client_run(int socketfh) {
         msg.msgType = FILE_BLOCK_ACK;
         marshall(&msg, marshallBuffer);
         cmpsc311_send_bytes(socketfh, sizeof(ProtoMsg), marshallBuffer);
+        log_request_end();
         break;
       case FILE_COMPLETE:
         // continue reading
