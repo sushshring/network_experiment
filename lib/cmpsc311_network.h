@@ -32,6 +32,9 @@ int cmpsc311_client_connect(unsigned char *ip, uint16_t port);
 int cmpsc311_client_connect_udp(unsigned char *ip, uint16_t port);
   // Connect a client socket for network communication over UDP
 
+int cmpsc311_connect_server_udp(unsigned short port);
+	// This function makes a server connection on a bound port over UDP.
+
 int cmpsc311_send_bytes( int sock, int len, unsigned char *block );
     // Send some bytes over the network
 

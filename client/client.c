@@ -102,14 +102,14 @@ int client_run(int socketfh) {
 }
 
 void log_request_start() {
-  clock_gettime(CLOCK_MONOTONIC, &tstart);
+  clock_gettime(CLOCK_REALTIME, &tstart);
   char msg[128];
   sprintf(msg, "START: %ld\n", BILLION * tstart.tv_sec + tstart.tv_nsec);
   write(timing_logfh, msg, strlen(msg));
 }
 
 void log_request_end() {
-  clock_gettime(CLOCK_MONOTONIC, &tend);
+  clock_gettime(CLOCK_REALTIME, &tend);
   char msg[128];
   sprintf(msg, "END: %ld\n", BILLION * tend.tv_sec + tend.tv_nsec);
   write(timing_logfh, msg, strlen(msg));

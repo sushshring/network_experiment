@@ -7,7 +7,7 @@
 ARCHIVE=ar
 CC=gcc
 LINK=gcc
-CFLAGS=-c -Wall -I. -I/opt/local/include
+CFLAGS=-c -fPIC -Wall -I. -I/opt/local/include
 LINKFLAGS=-L. -g -pthread -L/opt/local/lib
 LIBFLAGS=-shared -Wall -pthread 
 LINKLIBS=-lcmpsc311 -lgcrypt 

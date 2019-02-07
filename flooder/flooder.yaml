@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: network-exp-flooder
+spec:
+  replicas: 1
+  selector:
+    app: network-exp-flooder
+  template:
+    metadata:
+      name: network-exp-flooder
+      labels:
+        app: network-exp-flooder
+    spec:
+      containers:
+      - name: network-exp-flooder
+        env:
+          - name: PACKET_SINK
+            value: "10.0.0.1"
+          - name: PORT
+            value: "6060"
+        image: sushshring/network-exp:flooder
+        imagePullPolicy: Always
+        command: ["./flooder"]
+        args: ["-v","-t", "2", "10.0.0.1", "6060"]
+---
+# kind: Endpoints
+# apiVersion: v1
+# metadata:
+#   name: packetsink
+# subsets:
+#   - addresses:
+#       - ip: "123.1.23.123"
+#     ports:
+#       - port: 1024
+# ---

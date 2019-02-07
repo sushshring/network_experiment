@@ -109,6 +109,69 @@ int cmpsc311_connect_server(unsigned short port) {
 
 ////////////////////////////////////////////////////////////////////////////////
 //
+// Function     : cmpsc311_connect_server_udp
+// Description  : This function makes a server connection on a bound port over UDP.
+//
+// Inputs       : none
+// Outputs      : the server socket if successful, -1 if failure
+
+int cmpsc311_connect_server_udp(unsigned short port) {
+
+	// Local variables
+	struct sigaction new_action;
+	struct sockaddr_in saddr;
+	int server, optval;
+
+	// Set the signal handler
+	new_action.sa_handler = cmpsc311_signal_handler;
+	new_action.sa_flags = SA_NODEFER | SA_ONSTACK;
+	sigaction(SIGINT, &new_action, NULL);
+
+	// Create the socket
+	if ((server = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+		// Error out
+		logMessage(LOG_ERROR_LEVEL, "CMPSC311 socket() create failed : [%s]", strerror(errno));
+		return (-1);
+	}
+
+	// Setup so we can reuse the address
+	optval = 1;
+	if (setsockopt(server, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) != 0) {
+		// Error out
+		logMessage(LOG_ERROR_LEVEL, "CMPSC311 set socket option create failed : [%s]", strerror(errno));
+		close(server);
+		return (-1);
+	}
+
+	// Setup address and bind the server to a particular port
+	saddr.sin_family = AF_INET;
+	saddr.sin_port = htons(port);
+	saddr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	// Now bind to the server socket
+	if (bind(server, (struct sockaddr *)&saddr, sizeof(struct sockaddr)) == -1) {
+		// Error out
+		logMessage(LOG_ERROR_LEVEL, "CMPSC311 bind() on port %u : [%s]", port, strerror(errno));
+		close(server);
+		server = -1;
+		return (-1);
+	}
+	logMessage(LOG_INFO_LEVEL, "Server bound and listening on port [%d]", port);
+//
+//	// Listen for incoming connection
+//	if (listen(server, CMPSC311_MAX_BACKLOG) == -1) {
+//		logMessage(LOG_ERROR_LEVEL, "CMPSC311 listen() create failed : [%s]", strerror(errno));
+//		close(server);
+//		server = -1;
+//		return (-1);
+//	}
+
+	// Return the socket
+	return (server);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
 // Function     : cmpsc311_accept_connection
 // Description  : This function accepts an incoming connection from a client
 //                (using the server socket)

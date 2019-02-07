@@ -15,8 +15,6 @@
 #include "proto.h"
 
 // GLOBAL VARIABLES
-int timing_logfh;
-extern struct timespec tstart;
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Function     : flooder_create
@@ -25,7 +23,7 @@ extern struct timespec tstart;
 // Inputs       : port: Port of the flooder for TCP connections
 //                flooder_type: Type of the flooder. 1: self loop. 2: packet-sink
 // Outputs      : socketfh if successful, -1 if failure
-int flooder_create(char *addr, int port, int flooder_type);
+int sink_create(int port);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -33,7 +31,7 @@ int flooder_create(char *addr, int port, int flooder_type);
 // Description  : Starts the flooder
 // Inputs       : socketfh: File handle of connected socket
 // Outputs      : 0 if successful, -1 if failure
-int flooder_run(int socketfh);
+int sink_run(int socketfh);
 
 void log_request_start();
 #endif //CLIENT_flooder_H

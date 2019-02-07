@@ -1,0 +1,7 @@
+FROM bitnami/minideb:stretch
+RUN install_packages libgcrypt-dev make gcc
+COPY . /network-exp/
+WORKDIR /network-exp/server
+RUN make
+EXPOSE 6000
+ENTRYPOINT ["./server", "-v", "6000"]

@@ -1,0 +1,6 @@
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y libgcrypt-dev make gcc iputils-ping
+COPY . /network-exp/
+WORKDIR /network-exp/flooder
+RUN make
+#E TRYPOINT ["./flooder", "-v","-t", "2", "$PACKET_SINK", "$PORT"]
