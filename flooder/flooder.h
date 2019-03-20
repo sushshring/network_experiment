@@ -6,6 +6,7 @@
 #define CLIENT_FLOODER_H
 #define TIME_LOG_NAME "flooder_times"
 #define BILLION 1000000000L
+#define BLOCK_SIZE 4096
 #include <cmpsc311_network.h>
 #include <cmpsc311_log.h>
 #include <stdlib.h>
@@ -14,6 +15,10 @@
 #include <unistd.h>
 #include "proto.h"
 
+typedef struct {
+  int udp_sock;
+  int client_sock;
+} flooder_socks;
 // GLOBAL VARIABLES
 int timing_logfh;
 extern struct timespec tstart;
@@ -25,7 +30,7 @@ extern struct timespec tstart;
 // Inputs       : port: Port of the flooder for TCP connections
 //                flooder_type: Type of the flooder. 1: self loop. 2: packet-sink
 // Outputs      : socketfh if successful, -1 if failure
-int flooder_create(char *addr, int port, int flooder_type);
+flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -33,7 +38,7 @@ int flooder_create(char *addr, int port, int flooder_type);
 // Description  : Starts the flooder
 // Inputs       : socketfh: File handle of connected socket
 // Outputs      : 0 if successful, -1 if failure
-int flooder_run(int socketfh);
+int flooder_run(flooder_socks *);
 
 void log_request_start();
 #endif //CLIENT_flooder_H

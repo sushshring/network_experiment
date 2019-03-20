@@ -31,7 +31,19 @@ int client_connect(unsigned char *server_addr, uint16_t port) {
   return socketfh;
 }
 
-int client_run(int socketfh) {
+void *flooder_checks(void *flooder_fh) {
+  unsigned char *msg = malloc(6);
+  while (1) {
+    cmpsc311_read_bytes(flooder_fh, 6, msg);
+    if (strncmp(msg, "START", 6) == 0) {
+      write(timing_logfh, "FLOODER_START", 14);
+    } else if (strncmp(msg, "ENDIN", 6)) {
+      write(timing_logfh, "FLOODER_END", 14);
+    }
+  }
+}
+
+int client_run(int socketfh, int flooder_fh) {
   //
   //
   // LOCAL VARIABLES
@@ -40,7 +52,11 @@ int client_run(int socketfh) {
   ProtoMsg msg;
   unsigned char *marshallBuffer = malloc(sizeof(ProtoMsg));
   int fileavlb = 0, readBytes = 0;
-
+  pthread_t newthread;
+  int *flooder_sock = malloc(sizeof(int));
+  *flooder_sock = flooder_fh;
+  pthread_create(&newthread, NULL, flooder_checks, flooder_sock);
+  pthread_detach(newthread);
   logMessage(LOG_INFO_LEVEL, "Requesting file\n");
   // Request file
   bzero(&msg, sizeof(ProtoMsg));

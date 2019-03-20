@@ -16,7 +16,7 @@
 
 #define FLOODER_ARGUMENTS "hvl:t:"
 #define USAGE \
-  "USAGE: flooder [-h] [-v] [-l <logfile>] [-t <flooder-type>] <packet-sink-address>\n" \
+  "USAGE: flooder [-h] [-v] [-l <logfile>] [-t <flooder-type>] <packet-sink-address> <packet-sink-port> <client-address> <client-port>\n" \
   "\n" \
   "where:\n" \
   "    -h - help mode (display this message)\n" \
@@ -26,6 +26,8 @@
   "\n" \
   "    <packet-sink-address> - The address of the packet sink. In case of self loop, " \
   "this will always be overriden to be 127.0.0.1\n" \
+  "    <client-address> - The address of the client to notify flooder status\n" \
+  "    <client-port> - The port of the client to notify flooder status\n" \
   "\n"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +40,8 @@
 // Outputs      : 0 if successful, -1 if failure
 int main(int argc, char *argv[]) {
   // Local variables
-  int ch, verbose = 0, log_initialized = 0, socketfh = 0, flooder_type = 1;
+  int ch, verbose = 0, log_initialized = 0, flooder_type = 1;
+  flooder_socks *socks;
 
   // Process command line parameters
   while (( ch = getopt(argc, argv, FLOODER_ARGUMENTS)) != -1) {
@@ -69,18 +72,18 @@ int main(int argc, char *argv[]) {
     enableLogLevels(LOG_INFO_LEVEL);
   }
   // The flooder address should be the next option
-  if (optind + 1>= argc) {
+  if (optind + 3>= argc) {
     // No filename
     fprintf(stderr, "Missing command line parameters, use -h to see usage, aborting.\n");
     return ( -1 );
   }
 
-  if (( socketfh = flooder_create(argv[optind], atoi(argv[optind + 1]), flooder_type)) == -1 ) {
+  if (( socks = flooder_create(argv[optind], atoi(argv[optind + 1]), argv[optind+2], atoi(argv[optind + 3]))) == NULL ) {
     logMessage(LOG_ERROR_LEVEL, "flooder failed to connect\n");
     return ( -1 );
   }
 
-  if (flooder_run(socketfh) == -1) {
+  if (flooder_run(socks) == -1) {
     logMessage(LOG_ERROR_LEVEL, "flooder had error\n");
     return ( -1 );
   }

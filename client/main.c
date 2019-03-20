@@ -37,7 +37,7 @@
 // Outputs      : 0 if successful, -1 if failure
 int main(int argc, char *argv[]) {
   // Local variables
-  int ch, verbose = 0, log_initialized = 0, socketfh = 0;
+  int ch, verbose = 0, log_initialized = 0, socketfh = 0, flooder_fh = 0;
   srand ( time(NULL) );
   // Process command line parameters
   while (( ch = getopt(argc, argv, CLIENT_ARGUMENTS)) != -1) {
@@ -70,7 +70,16 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Missing command line parameters, use -h to see usage, aborting.\n");
     return ( -1 );
   }
-
+  logMessage(LOG_INFO_LEVEL, "Starting flooder socket\n");
+  if ((flooder_fh = cmpsc311_connect_server(6001)) == -1) {
+    fprintf(stderr, "Could not setup connection from flooder\n");
+    return ( -1 );
+  }
+  if (cmpsc311_accept_connection(flooder_fh) == -1) {
+    fprintf(stderr, "Could not accept connection from flooder\n");
+    return ( -1 );
+  }
+  logMessage(LOG_INFO_LEVEL, "Connected to flooder\n");
   while (1) {
     logMessage(LOG_INFO_LEVEL, "New client\n");
     if (
@@ -81,7 +90,7 @@ int main(int argc, char *argv[]) {
       logMessage(LOG_ERROR_LEVEL, "Client failed to connect\n");
       return ( -1 );
     }
-    if (client_run(socketfh) == -1) {
+    if (client_run(socketfh, flooder_fh) == -1) {
       logMessage(LOG_ERROR_LEVEL, "Client had error\n");
       return ( -1 );
     }
