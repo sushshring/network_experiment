@@ -17,7 +17,7 @@ flooder_socks *flooder_create(char *addr, int port, char *client_addr, int clien
     logMessage(LOG_ERROR_LEVEL, "Could not listen\n");
     return NULL;
   }
-  if ((socks->client_sock = cmpsc311_client_connect((unsigned char *) client_addr, (unsigned short) port)) == -1) {
+  if ((socks->client_sock = cmpsc311_client_connect((unsigned char *) client_addr, (unsigned short) client_port)) == -1) {
     logMessage(LOG_ERROR_LEVEL, "Could not connect to client\n");
     return NULL;
   }
