@@ -1,7 +1,7 @@
 LINK=gcc
 CC=gcc
-CFLAGS=-c -ggdb -Wall -I. -I/opt/local/include -I../lib -I../common -I../proto
-LINKFLAGS=-L. -g -ggdb -pthread -L/opt/local/lib -L../lib
+CFLAGS=-c -fPIC -ggdb -Wall -I. -I/opt/local/include -I../lib -I../common -I../proto
+LINKFLAGS=-L. -fPIC -no-pie -g -ggdb -pthread -L/opt/local/lib -L../lib
 LIBFLAGS=-shared -Wall -pthread
 LINKLIBS=-lcmpsc311 -lgcrypt -lm
 TARGETS=flooder

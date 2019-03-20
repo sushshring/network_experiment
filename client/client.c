@@ -35,10 +35,11 @@ void *flooder_checks(void *flooder_fh) {
   unsigned char *msg = malloc(6);
   while (1) {
     if (!cmpsc311_read_bytes(* (int *)flooder_fh, 6, msg)) {
+      logMessage(LOG_INFO_LEVEL, "Received flooder message", msg);
       if (strncmp(msg, "START", 6) == 0) {
-        write(timing_logfh, "FLOODER_START", 14);
-      } else if (strncmp(msg, "ENDIN", 6)) {
-        write(timing_logfh, "FLOODER_END", 14);
+        write(timing_logfh, "FLOODER_START\n", 14);
+      } else if (strncmp(msg, "ENDIN", 6) == 0) {
+        write(timing_logfh, "FLOODER_END\n", 12);
       }
     }
   }

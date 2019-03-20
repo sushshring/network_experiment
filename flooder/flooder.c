@@ -55,7 +55,8 @@ int flooder_run(flooder_socks *socks) {
   }
   while (1) {
     sleep(5);
-    write(socks->client_sock, client_start, strlen(client_start));
+    logMessage(LOG_INFO_LEVEL, "Notifying start to client\n");
+    write(socks->client_sock, client_start, 6);
     clock_gettime(CLOCK_REALTIME, &clock);
     clocktime = clock.tv_sec;
     currenttime = clocktime;
@@ -73,7 +74,8 @@ int flooder_run(flooder_socks *socks) {
       clock_gettime(CLOCK_REALTIME, &clock);
       currenttime = clock.tv_sec;
     }
-    write(socks->client_sock, client_end, strlen(client_end));
+    logMessage(LOG_INFO_LEVEL, "Notifying end to client\n");
+    write(socks->client_sock, client_end, 6);
     logMessage(LOG_INFO_LEVEL, "Tried to send %ld, sent %ld\n", send_bytes, sent_bytes);
   }
   free(rbuf);
