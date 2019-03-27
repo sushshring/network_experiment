@@ -6,7 +6,7 @@
 #define CLIENT_FLOODER_H
 #define TIME_LOG_NAME "flooder_times"
 #define BILLION 1000000000L
-#define BLOCK_SIZE 4096
+#define BLOCK_SIZE 3400
 #include <cmpsc311_network.h>
 #include <cmpsc311_log.h>
 #include <stdlib.h>

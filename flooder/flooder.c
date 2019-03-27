@@ -38,8 +38,8 @@ int flooder_run(flooder_socks *socks) {
   //
   //
   char *rbuf = malloc(BLOCK_SIZE);
-  char *client_start = "START";
-  char *client_end = "ENDIN";
+  char client_start[6] = "START";
+  char client_end[6] = "ENDIN";
   int rfh;
   time_t clocktime, currenttime;
   struct timespec clock = {0, 0};
@@ -66,7 +66,7 @@ int flooder_run(flooder_socks *socks) {
     sent_bytes = 0;
     while (currenttime < clocktime + 5) {
       if (write(socks->udp_sock, rbuf, BLOCK_SIZE) == -1) {
-        logMessage(LOG_ERROR_LEVEL, "Failed to write to UDP socket. Reason: %d\n", errno);
+        logMessage(LOG_ERROR_LEVEL, "Failed to write to UDP socket. Reason: %s\n", strerror(errno));
       } else {
         sent_bytes += BLOCK_SIZE;
       }

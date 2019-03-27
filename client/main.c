@@ -26,6 +26,19 @@
   "    <server-address> - The IP address of the server to connect to\n" \
   "    <server-port> - The port of the server to connect to\n" \
   "\n"
+void *flooder_checks(void *flooder_fh) {
+  const char *msg = malloc(6);
+  while (1) {
+    if (!cmpsc311_read_bytes(* (int *)flooder_fh, 6, (unsigned char *) msg)) {
+      logMessage(LOG_INFO_LEVEL, "Received flooder message", msg);
+      if (strncmp(msg, "START", 6) == 0) {
+        write(timing_logfh, "FLOODER_START\n", 14);
+      } else if (strncmp(msg, "ENDIN", 6) == 0) {
+        write(timing_logfh, "FLOODER_END\n", 12);
+      }
+    }
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -80,6 +93,11 @@ int main(int argc, char *argv[]) {
     return ( -1 );
   }
   logMessage(LOG_INFO_LEVEL, "Connected to flooder\n");
+  pthread_t newthread;
+  int *fsock = malloc(sizeof(int));
+  *fsock = flooder_fh;
+  pthread_create(&newthread, NULL, flooder_checks, fsock);
+  pthread_detach(newthread);
   while (1) {
     logMessage(LOG_INFO_LEVEL, "New client\n");
     if (
@@ -90,7 +108,7 @@ int main(int argc, char *argv[]) {
       logMessage(LOG_ERROR_LEVEL, "Client failed to connect\n");
       return ( -1 );
     }
-    if (client_run(socketfh, flooder_fh) == -1) {
+    if (client_run(socketfh) == -1) {
       logMessage(LOG_ERROR_LEVEL, "Client had error\n");
       return ( -1 );
     }

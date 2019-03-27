@@ -49,9 +49,8 @@ int client_connect(unsigned char *server_addr, uint16_t port);
 // Description  : The simulator for the client. Requests a specific file at a
 //                exponentially distributed time
 // Inputs       : socketfh: File handle of connected socket
-//                flooder_fh: File handle of connected socket to listen to flooder triggers
 // Outputs      : 0 if successful test, -1 if failure
-int client_run(int socketfh, int flooder_fh);
+int client_run(int socketfh);
 
 void log_request_start();
 
