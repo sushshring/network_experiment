@@ -1,22 +1,23 @@
 #!/bin/bash
-https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/arm64/docker-ce_18.06.1~ce~3-0~ubuntu_arm64.deb -o docker.deb
-add-apt-repository ppa:longsleep/golang-backports
-apt update
-apt install -y net-tools \
-    build-essential libgcrypt-dev libcurl4-gnutls-dev \
-    vim python3 \
-    htop iftop \
-    apt-transport-https ca-certificates curl gnupg-agent software-properties-common \
-    golang-go
-dpkg -i docker.deb
-git clone https://github.com/sushshring/network_experiment.git
-git clone https://github.com/sushshring/kubernetes.git
-apt install -y socat ebtables
-cd kubernetes
-make
-cp _output/bin/* /usr/local/bin
-cd ..
-echo "[Unit]
+function configure {
+    wget https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/arm64/docker-ce_18.06.1~ce~3-0~ubuntu_arm64.deb -o docker.deb
+    add-apt-repository ppa:longsleep/golang-backports
+    apt update
+    apt install -y net-tools \
+        build-essential libgcrypt-dev libcurl4-gnutls-dev \
+        vim python3 \
+        htop iftop \
+        apt-transport-https ca-certificates curl gnupg-agent software-properties-common \
+        golang-go
+    dpkg -i docker.deb
+    git clone https://github.com/sushshring/network_experiment.git
+    git clone https://github.com/sushshring/kubernetes.git
+    apt install -y socat ebtables
+    cd kubernetes
+    make
+    cp _output/bin/* /usr/local/bin
+    cd ..
+    echo "[Unit]
 Description=Kubelet service
 After=docker.service
 [Service]
@@ -34,5 +35,8 @@ ExecStart=/usr/local/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $
 
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/kubelet.service
-sudo systemctl enable kubelet
-kubeadm init
+    sudo systemctl enable kubelet
+    kubeadm init
+}
+
+configure > /home/cfg.tmp.log
