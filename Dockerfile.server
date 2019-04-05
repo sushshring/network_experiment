@@ -1,5 +1,5 @@
-FROM bitnami/minideb:stretch
-RUN install_packages libgcrypt-dev make gcc
+FROM ubuntu
+RUN apt update && apt install -y libgcrypt-dev make gcc
 COPY . /network-exp/
 WORKDIR /network-exp/server
 RUN make

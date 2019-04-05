@@ -15,14 +15,12 @@ spec:
       containers:
       - name: network-exp-flooder
         env:
-          - name: PACKET_SINK
-            value: "10.0.0.1"
           - name: PORT
             value: "6060"
         image: sushshring/network-exp:flooder
         imagePullPolicy: Always
         command: ["./flooder"]
-        args: ["-v","-t", "2", "10.0.0.1", "6060"]
+        args: ["-v","-t", "2", "54.198.90.165", "6060"]
 ---
 # kind: Endpoints
 # apiVersion: v1

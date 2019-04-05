@@ -1,7 +1,7 @@
 LINK=gcc
 CC=gcc
 CFLAGS=-c -fPIC -ggdb -Wall -I. -I/opt/local/include -I../lib -I../common -I../proto
-LINKFLAGS=-L. -g -ggdb -pthread -L/opt/local/lib -L../lib
+LINKFLAGS=-L. -g -ggdb -pthread -fPIC -L/opt/local/lib -L../lib
 LIBFLAGS=-shared -Wall -pthread
 LINKLIBS=-lcmpsc311 -lgcrypt -lm
 TARGETS=server
