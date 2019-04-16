@@ -61,6 +61,7 @@ class Analyzer:
             self.plot_histogram_control(full_histogram=arg_parser.full_histogram,
                                         remove_outliers=arg_parser.remove_outliers,
                                         outliers_mode=arg_parser.outlier_removal_type)
+            self.get_cr_detection_score()
         plt.show()
         pass
 
@@ -93,6 +94,7 @@ class Analyzer:
             ax.hist(rtts_w_flooder, color='Orange', bins=1000, alpha=0.5, label='Round trip time with flooder')
             ax.hist(rtts_wo_flooder, color='Blue', bins=1000, alpha=0.5, label='Round trip time without flooder')
         ax.legend()
+        ax.title('RTT histogram')
 
     @plotter('RTT plot')
     def plot_rtts(self, remove_outliers: bool, outliers_mode: OutliersFilterMode, ax: Axes):
@@ -111,6 +113,7 @@ class Analyzer:
             ax.plot(*zip(*rtts_w_flooder), color='b', label='Rtts with flooder', alpha=0.5)
             ax.plot(*zip(*rtts_wo_flooder), color='g', label='Rtts without flooder', alpha=0.5)
         ax.legend()
+        ax.title('RTT plot')
 
     @plotter('Histogram with control')
     def plot_histogram_control(self, full_histogram: bool, remove_outliers: bool, outliers_mode: OutliersFilterMode,
@@ -141,3 +144,8 @@ class Analyzer:
             ax.hist(rtts_w_flooder, color='Orange', bins=1000, alpha=0.5, label='Round trip time with flooder')
             ax.hist(rtts_wo_flooder, color='Blue', bins=1000, alpha=0.5, label='Round trip time without flooder')
         ax.legend()
+        ax.title('RTT histogram with control')
+
+    def get_cr_detection_score(self):
+
+        pass
