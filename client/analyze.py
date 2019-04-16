@@ -41,14 +41,14 @@ def parse_client_times(times):
         if line.startswith('END'):
             etime = float(line.split()[1])
             rtt = etime - stime
-            rtts.append(((stime-first_start) / (10**9), rtt))
-            # rtts.append(rtt)
+            # rtts.append(((stime-first_start) / (10**9), rtt))
+            rtts.append(rtt)
             if flooder_on:
-                rtts_w_flooder.append(((stime-first_start) / (10**9), rtt))
-                # rtts_w_flooder.append(rtt)
+                # rtts_w_flooder.append(((stime-first_start) / (10**9), rtt))
+                rtts_w_flooder.append(rtt)
             else:
-                rtts_wo_flooder.append(((stime-first_start) / (10**9), rtt))
-                # rtts_wo_flooder.append(rtt)
+                # rtts_wo_flooder.append(((stime-first_start) / (10**9), rtt))
+                rtts_wo_flooder.append(rtt)
     return rtts, rtts_w_flooder, rtts_wo_flooder
 
 rtts, rtts_w_flooder, rtts_wo_flooder = parse_client_times(intf_times)
@@ -79,7 +79,7 @@ plt.show()
 # print(len(a), len(b))
 # print(np.mean(a), np.mean(b))
 # print(np.std(a), np.std(b))
-# # print(stats.mannwhitneyu(a, b, False))
+# print(stats.mannwhitneyu(a, b, False))
 # plt.hist(a, bins=1000, color='Orange', alpha=0.5, label='With flooder')
 # plt.hist(b, bins=1000, color='Blue', alpha=0.5, label='Without flooder')
 # plt.legend()
@@ -101,18 +101,23 @@ plt.show()
 #     final_list = [x for x in final_list if (x < mean + 0.5 * sd)]
 #     return np.array(final_list)
 
-# def norm_fit_plot(data):
-#     plt.figure()
-#     loc, scale = stats.norm.fit(data)
-#     print(loc, scale)
-#     n = stats.norm(loc=loc, scale=scale)
-#     sample = np.random.choice(data, 1000)
-#     plt.hist(sample, bins=5000)
-#     x = np.arange(sample.min(), sample.max()+0.2, 0.2)
-#     plt.plot(x, 8500000 * n.pdf(x))
-#     print(stats.shapiro(sample))
-#     plt.show()
-# norm_fit_plot(remove_outliers(np.array(rtts)))
+def norm_fit_plot(data):
+    plt.figure()
+    # prob, pearson = stats.boxcox_normplot(data, -20, 20, plot=plt)
+    # print(prob, pearson)
+    # plt.show()
+    #
+    loc, scale = stats.norm.fit(data)
+    print(loc, scale)
+    n = stats.norm(loc=loc, scale=scale)
+    sample = np.random.choice(data, 1000)
+    plt.hist(data, bins=5000)
+    x = np.arange(data.min(), data.max()+0.2, 0.2)
+    # plt.plot(data)
+    print(stats.shapiro(data))
+    plt.show()
+conv = stats.boxcox(remove_outliers_pct(rtts), 0)
+norm_fit_plot(conv)
 
 # def ks_plot_norm(data):
 #     length = len(data)

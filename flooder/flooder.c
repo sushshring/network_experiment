@@ -5,13 +5,14 @@
 #include "flooder.h"
 struct timespec tstart = {0,0};
 
-flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port) {
+flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, int scale) {
   //
   //
   // LOCAL VARIABLES
   //
   //
   flooder_socks *socks = malloc(sizeof(flooder_socks));
+  socks->scale = scale;
   logMessage(LOG_INFO_LEVEL, "Writing to UDP socket: %s:%d", addr, port);
   if ((socks->udp_sock = cmpsc311_client_connect_udp((unsigned char *) addr, (unsigned short) port)) == -1) {
     logMessage(LOG_ERROR_LEVEL, "Could not listen\n");
@@ -37,7 +38,8 @@ int flooder_run(flooder_socks *socks) {
   // LOCAL VARIABLES
   //
   //
-  char *rbuf = malloc(BLOCK_SIZE);
+  int data_size = BLOCK_SIZE * socks->scale;
+  char *rbuf = malloc(data_size);
   char client_start[6] = "START";
   char client_end[6] = "ENDIN";
   int rfh;
@@ -49,7 +51,7 @@ int flooder_run(flooder_socks *socks) {
     logMessage(LOG_ERROR_LEVEL, "Could not open /dev/urandom\n");
     return -1;
   }
-  if (read(rfh, rbuf, BLOCK_SIZE) == -1) {
+  if (read(rfh, rbuf, data_size) == -1) {
     logMessage(LOG_ERROR_LEVEL, "Failed to read from /dev/urandom\n");
     return -1;
   }
@@ -65,12 +67,12 @@ int flooder_run(flooder_socks *socks) {
     send_bytes = 0;
     sent_bytes = 0;
     while (currenttime < clocktime + 5) {
-      if (write(socks->udp_sock, rbuf, BLOCK_SIZE) == -1) {
+      if (write(socks->udp_sock, rbuf, data_size) == -1) {
         logMessage(LOG_ERROR_LEVEL, "Failed to write to UDP socket. Reason: %s\n", strerror(errno));
       } else {
-        sent_bytes += BLOCK_SIZE;
+        sent_bytes += data_size;
       }
-      send_bytes += BLOCK_SIZE;
+      send_bytes += data_size;
       clock_gettime(CLOCK_REALTIME, &clock);
       currenttime = clock.tv_sec;
     }

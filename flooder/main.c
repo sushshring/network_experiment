@@ -14,15 +14,16 @@
 #include <cmpsc311_util.h>
 #include "flooder.h"
 
-#define FLOODER_ARGUMENTS "hvl:t:"
+#define FLOODER_ARGUMENTS "hvl:s:t:"
 #define USAGE \
-  "USAGE: flooder [-h] [-v] [-l <logfile>] [-t <flooder-type>] <packet-sink-address> <packet-sink-port> <client-address> <client-port>\n" \
+  "USAGE: flooder [-h] [-v] [-l <logfile>] [-t <flooder-type>] [-s <scale-factor>] <packet-sink-address> <packet-sink-port> <client-address> <client-port>\n" \
   "\n" \
   "where:\n" \
   "    -h - help mode (display this message)\n" \
   "    -v - verbose output\n" \
   "    -l - write log messages to the filename <logfile>\n" \
   "    -t - Type of flooder. 1: Self loop; 2: packet sink\n" \
+  "    -s - Scale factor to adjust flooding size\n" \
   "\n" \
   "    <packet-sink-address> - The address of the packet sink. In case of self loop, " \
   "this will always be overriden to be 127.0.0.1\n" \
@@ -40,7 +41,7 @@
 // Outputs      : 0 if successful, -1 if failure
 int main(int argc, char *argv[]) {
   // Local variables
-  int ch, verbose = 0, log_initialized = 0, flooder_type = 1;
+  int ch, verbose = 0, log_initialized = 0, flooder_type = 1, flooder_scale = 1;
   flooder_socks *socks;
 
   // Process command line parameters
@@ -58,6 +59,9 @@ int main(int argc, char *argv[]) {
         break;
       case 't':
         flooder_type = atoi(optarg);
+        break;
+      case 's':
+        flooder_scale = atoi(optarg);
         break;
       default:
         fprintf(stderr, "Unknown command line option (%c), aborting.\n", ch);
@@ -78,7 +82,7 @@ int main(int argc, char *argv[]) {
     return ( -1 );
   }
 
-  if (( socks = flooder_create(argv[optind], atoi(argv[optind + 1]), argv[optind+2], atoi(argv[optind + 3]))) == NULL ) {
+  if (( socks = flooder_create(argv[optind], atoi(argv[optind + 1]), argv[optind+2], atoi(argv[optind + 3]), flooder_scale)) == NULL ) {
     logMessage(LOG_ERROR_LEVEL, "flooder failed to connect\n");
     return ( -1 );
   }
