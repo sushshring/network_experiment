@@ -34,12 +34,12 @@ class Analyzer:
         mode = stats.mode(elements, axis=None)[0]
         stdev = np.std(elements)
         ht, lt = mode + 2 * stdev, mode - 2 * stdev
-        return filter(lambda x: ht >= x >= lt, elements)
+        return list(filter(lambda x: ht >= x >= lt, elements))
 
     @staticmethod
     def _remove_outliers_pct(elements):
         lt, ht = np.percentile(elements, 0.05), np.percentile(elements, 0.95)
-        return filter(lambda x: ht >= x >= lt, elements)
+        return list(filter(lambda x: ht >= x >= lt, elements))
 
     def analyze(self, arg_parser: ArgParser):
         plt.figure()
@@ -70,16 +70,16 @@ class Analyzer:
     @plotter('RTT plot')
     def plot_rtts(self, remove_outliers: bool, outliers_mode: OutliersFilterMode, ax: Axes):
         if remove_outliers:
-            data = self.data.rtts()
+            data, _, _ = self.data.rtts()
             if outliers_mode == OutliersFilterMode.PERCENTAGE:
                 rtts = Analyzer._remove_outliers_pct(data)
             else:
                 rtts = Analyzer._remove_outliers_mode(data)
-            ax.plot(rtts, color='r', label='Rtts with outliers removed by %s' % (
+            ax.plot(rtts, color='r', label=str.format('Rtts with outliers removed by {}',
                 'percentage' if outliers_mode == OutliersFilterMode.PERCENTAGE else 'mode'))
         else:
             rtts, rtts_w_flooder, rtts_wo_flooder = self.data.rtts_with_start_times()
-            ax.plot(*zip(*rtts), color='r', label='Rtts')
-            ax.plot(*zip(*rtts_w_flooder), color='b', label='Rtts with flooder')
-            ax.plot(*zip(*rtts_wo_flooder), color='g', label='Rtts without flooder')
+            ax.plot(*zip(*rtts), color='r', label='Rtts', alpha=0.5)
+            ax.plot(*zip(*rtts_w_flooder), color='b', label='Rtts with flooder', alpha=0.5)
+            ax.plot(*zip(*rtts_wo_flooder), color='g', label='Rtts without flooder', alpha=0.5)
         ax.legend()
