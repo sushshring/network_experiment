@@ -9,6 +9,8 @@ class OutlierParseAction(argparse.Action):
             outlier_type = OutliersFilterMode.PERCENTAGE
         elif values == 2:
             outlier_type = OutliersFilterMode.MODE
+        elif values == 3:
+            outlier_type = OutliersFilterMode.FILTER
         else:
             raise ValueError('Illegal Outlier filter mode')
         setattr(namespace, self.dest, outlier_type)
@@ -29,7 +31,7 @@ class ArgParser:
                                                           'Arguments to filter outliers in the data')
         outlier_matching.add_argument('--remove-outliers', action='store_true',
                                       help='Remove outliers from the data')
-        outlier_matching.add_argument('--outlier-removal-type', type=int, action=OutlierParseAction, choices=[1, 2])
+        outlier_matching.add_argument('--outlier-removal-type', type=int, action=OutlierParseAction, choices=[1, 2, 3])
 
         histogram_options = self.parser.add_argument_group('histogram_options',
                                                            'Arguments to modify the histogram chart')

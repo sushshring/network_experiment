@@ -1,11 +1,14 @@
+from typing import List
+
 import matplotlib
+import numpy as np
+from matplotlib.axes import Axes
+from scipy import stats, signal
+
 from outliers_filter_mode import OutliersFilterMode
 from parser.arg_parser import ArgParser
 from parser.rtt import Rtt
-from matplotlib.axes import Axes
-import numpy as np
-from scipy import stats
-from sys import platform
+
 matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 
@@ -41,6 +44,11 @@ class Analyzer:
         lt, ht = np.percentile(elements, 0.05), np.percentile(elements, 0.95)
         return list(filter(lambda x: ht >= x >= lt, elements))
 
+    @staticmethod
+    def _filter_data(data: List[float]) -> List[float]:
+        b, a = signal.butter(3, 0.05)
+        return signal.lfilter(b, a, data)
+
     def analyze(self, arg_parser: ArgParser):
         plt.figure()
         if arg_parser.show_rtts:
@@ -73,6 +81,8 @@ class Analyzer:
             data, _, _ = self.data.rtts()
             if outliers_mode == OutliersFilterMode.PERCENTAGE:
                 rtts = Analyzer._remove_outliers_pct(data)
+            elif outliers_mode == OutliersFilterMode.FILTER:
+                rtts = Analyzer._filter_data(data)
             else:
                 rtts = Analyzer._remove_outliers_mode(data)
             ax.plot(rtts, color='r', label=str.format('Rtts with outliers removed by {}',

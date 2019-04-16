@@ -44,14 +44,6 @@ from parser.data_parser import Parser
 # plt.legend()
 # plt.show()
 
-
-# def remove_outliers(elements):
-#     mean = np.mean(elements, axis=0)
-#     sd = np.std(elements, axis=0)
-#     final_list = [x for x in elements if (x > mean - 0.5 * sd)]
-#     final_list = [x for x in final_list if (x < mean + 0.5 * sd)]
-#     return np.array(final_list)
-
 # def norm_fit_plot(data):
 #     plt.figure()
 #     # prob, pearson = stats.boxcox_normplot(data, -20, 20, plot=plt)
