@@ -1,68 +1,20 @@
-import sys
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy import signal
-from scipy import stats
-
-intf_times = open(sys.argv[1])
-# no_intf_times = open(sys.argv[2])
-
-def remove_outliers_pct(elements):
-    mode = stats.mode(elements, axis=None)[0]
-    stdev = np.std(elements)
-    ht, lt = mode + 2 * stdev, mode - 2 * stdev
-    return filter(lambda x: x <= ht and x >= lt, elements)
-
-def movingaverage (values, window):
-    weights = np.repeat(1.0, window)/window
-    sma = np.convolve(values, weights, 'valid')
-    return sma
-
-def parse_client_times(times):
-    rtts_wo_flooder = []
-    rtts_w_flooder = []
-    rtts = []
-    startimes = []
-    flooder_on = True
-    stime = 0
-    first_start = None
-    while True:
-        line = times.readline()
-        if not line:
-            break
-        if line.startswith('FLOODER_START'):
-            flooder_on = True
-        if line.startswith('FLOODER_END'):
-            flooder_on = False
-        if line.startswith('START'):
-            stime = float(line.split()[1])
-            if not first_start:
-                first_start = stime
-        if line.startswith('END'):
-            etime = float(line.split()[1])
-            rtt = etime - stime
-            # rtts.append(((stime-first_start) / (10**9), rtt))
-            rtts.append(rtt)
-            if flooder_on:
-                # rtts_w_flooder.append(((stime-first_start) / (10**9), rtt))
-                rtts_w_flooder.append(rtt)
-            else:
-                # rtts_wo_flooder.append(((stime-first_start) / (10**9), rtt))
-                rtts_wo_flooder.append(rtt)
-    return rtts, rtts_w_flooder, rtts_wo_flooder
-
-rtts, rtts_w_flooder, rtts_wo_flooder = parse_client_times(intf_times)
-plt.figure()
-plt.plot(*zip(*rtts))
-plt.show()
+from analyzer import Analyzer
+from parser.arg_parser import ArgParser
+from parser.data_parser import Parser
 
 
-#bb = remove_outliers_pct([x[1] for x in rtts])
-#plt.figure()
-#plt.plot([x[0] for x in rtts], [x[1] for x in rtts])
-#plt.show()
-#print(','.join([str(x[0]) for x in rtts]))
-#print(','.join([str(x[1]) for x in rtts]))
+# def movingaverage(values, window):
+#     weights = np.repeat(1.0, window) / window
+#     sma = np.convolve(values, weights, 'valid')
+#     return sma
+
+
+# bb = remove_outliers_pct([x[1] for x in rtts])
+# plt.figure()
+# plt.plot([x[0] for x in rtts], [x[1] for x in rtts])
+# plt.show()
+# print(','.join([str(x[0]) for x in rtts]))
+# print(','.join([str(x[1]) for x in rtts]))
 
 
 # r = movingaverage(rtts, 1000)
@@ -93,7 +45,6 @@ plt.show()
 # plt.show()
 
 
-
 # def remove_outliers(elements):
 #     mean = np.mean(elements, axis=0)
 #     sd = np.std(elements, axis=0)
@@ -101,23 +52,25 @@ plt.show()
 #     final_list = [x for x in final_list if (x < mean + 0.5 * sd)]
 #     return np.array(final_list)
 
-def norm_fit_plot(data):
-    plt.figure()
-    # prob, pearson = stats.boxcox_normplot(data, -20, 20, plot=plt)
-    # print(prob, pearson)
-    # plt.show()
-    #
-    loc, scale = stats.norm.fit(data)
-    print(loc, scale)
-    n = stats.norm(loc=loc, scale=scale)
-    sample = np.random.choice(data, 1000)
-    plt.hist(data, bins=5000)
-    x = np.arange(data.min(), data.max()+0.2, 0.2)
-    # plt.plot(data)
-    print(stats.shapiro(data))
-    plt.show()
-conv = stats.boxcox(remove_outliers_pct(rtts), 0)
-norm_fit_plot(conv)
+# def norm_fit_plot(data):
+#     plt.figure()
+#     # prob, pearson = stats.boxcox_normplot(data, -20, 20, plot=plt)
+#     # print(prob, pearson)
+#     # plt.show()
+#     #
+#     loc, scale = stats.norm.fit(data)
+#     print(loc, scale)
+#     n = stats.norm(loc=loc, scale=scale)
+#     sample = np.random.choice(data, 1000)
+#     plt.hist(data, bins=5000)
+#     x = np.arange(data.min(), data.max() + 0.2, 0.2)
+#     # plt.plot(data)
+#     print(stats.shapiro(data))
+#     plt.show()
+
+#
+# conv = stats.boxcox(remove_outliers_pct(rtts), 0)
+# norm_fit_plot(conv)
 
 # def ks_plot_norm(data):
 #     length = len(data)
@@ -179,3 +132,12 @@ norm_fit_plot(conv)
 # ax4.plot(njustSendTime, nnorm_filtered)
 # ax4.plot(t, pureSquare)
 # plt.show()
+def main():
+    arg_parser = ArgParser()
+    parser = Parser(arg_parser.file)
+    analyzer = Analyzer(parser.rtts)
+    analyzer.analyze(arg_parser)
+
+
+if __name__ == '__main__':
+    main()
