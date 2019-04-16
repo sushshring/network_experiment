@@ -85,8 +85,7 @@ class Analyzer:
                 rtts = Analyzer._filter_data(data)
             else:
                 rtts = Analyzer._remove_outliers_mode(data)
-            ax.plot(rtts, color='r', label=str.format('Rtts with outliers removed by {}',
-                'percentage' if outliers_mode == OutliersFilterMode.PERCENTAGE else 'mode'))
+            ax.plot(rtts, color='r', label=str.format('Rtts with outliers removed by {}', outliers_mode.name))
         else:
             rtts, rtts_w_flooder, rtts_wo_flooder = self.data.rtts_with_start_times()
             ax.plot(*zip(*rtts), color='r', label='Rtts', alpha=0.5)
