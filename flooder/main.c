@@ -41,7 +41,8 @@
 // Outputs      : 0 if successful, -1 if failure
 int main(int argc, char *argv[]) {
   // Local variables
-  int ch, verbose = 0, log_initialized = 0, flooder_type = 1, flooder_scale = 1;
+  int ch, verbose = 0, log_initialized = 0, flooder_type = 1;
+  double flooder_scale = 1;
   flooder_socks *socks;
 
   // Process command line parameters
@@ -61,7 +62,7 @@ int main(int argc, char *argv[]) {
         flooder_type = atoi(optarg);
         break;
       case 's':
-        flooder_scale = atoi(optarg);
+        flooder_scale = atof(optarg);
         break;
       default:
         fprintf(stderr, "Unknown command line option (%c), aborting.\n", ch);

@@ -18,7 +18,7 @@
 typedef struct {
   int udp_sock;
   int client_sock;
-  int scale;
+  double scale;
 } flooder_socks;
 // GLOBAL VARIABLES
 int timing_logfh;
