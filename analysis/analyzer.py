@@ -1,12 +1,11 @@
 import matplotlib
-
 from outliers_filter_mode import OutliersFilterMode
 from parser.arg_parser import ArgParser
 from parser.rtt import Rtt
 from matplotlib.axes import Axes
 import numpy as np
 from scipy import stats
-
+from sys import platform
 matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 
@@ -65,7 +64,7 @@ class Analyzer:
             ax.hist(rtts, bins=1000, alpha=0.5, label='Round trip time frequency')
         else:
             ax.hist(rtts_w_flooder, color='Orange', bins=1000, alpha=0.5, label='Round trip time with flooder')
-            ax.hist(rtts_w_flooder, color='Blue', bins=1000, alpha=0.5, label='Round trip time without flooder')
+            ax.hist(rtts_wo_flooder, color='Blue', bins=1000, alpha=0.5, label='Round trip time without flooder')
         ax.legend()
 
     @plotter('RTT plot')
