@@ -22,7 +22,7 @@ class plotter:
             n = len(plt.gcf().axes)
             for i in range(n):
                 plt.gcf().axes[i].change_geometry(n + 1, 1, i + 1)
-            ax = plt.subplot(n+1, 1, n+1, label=self.label)
+            ax = plt.subplot(n + 1, 1, n + 1, label=self.label)
             return func(*args, **kwargs, ax=ax)
 
         return plot
@@ -55,7 +55,12 @@ class Analyzer:
         if arg_parser.show_rtts:
             self.plot_rtts(arg_parser.remove_outliers, arg_parser.outlier_removal_type)
         if arg_parser.show_histogram:
-            self.plot_histogram(full_histogram=arg_parser.full_histogram, remove_outliers=arg_parser.remove_outliers, outliers_mode=arg_parser.outlier_removal_type)
+            self.plot_histogram(full_histogram=arg_parser.full_histogram, remove_outliers=arg_parser.remove_outliers,
+                                outliers_mode=arg_parser.outlier_removal_type)
+        if arg_parser.show_control_histogram:
+            self.plot_histogram_control(full_histogram=arg_parser.full_histogram,
+                                        remove_outliers=arg_parser.remove_outliers,
+                                        outliers_mode=arg_parser.outlier_removal_type)
         plt.show()
         pass
 
@@ -108,7 +113,8 @@ class Analyzer:
         ax.legend()
 
     @plotter('Histogram with control')
-    def plot_histogram_control(self, full_histogram: bool, remove_outliers: bool, outliers_mode: OutliersFilterMode, ax: Axes):
+    def plot_histogram_control(self, full_histogram: bool, remove_outliers: bool, outliers_mode: OutliersFilterMode,
+                               ax: Axes):
         """
 
                :param ax: Axes object to plot on
@@ -135,4 +141,3 @@ class Analyzer:
             ax.hist(rtts_w_flooder, color='Orange', bins=1000, alpha=0.5, label='Round trip time with flooder')
             ax.hist(rtts_wo_flooder, color='Blue', bins=1000, alpha=0.5, label='Round trip time without flooder')
         ax.legend()
-

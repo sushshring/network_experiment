@@ -25,6 +25,7 @@ class ArgParser:
         # Top level arguments for specific plots
         self.parser.add_argument('--show-rtts', action='store_true', help='Show the rtt plot')
         self.parser.add_argument('--show-histogram', action='store_true', help='Show the rtt histogram')
+        self.parser.add_argument('--show-histogram-control', action='store_true', help='Show the rtt histogram with control sequence')
 
         # Group level arguments for individual plots
         outlier_matching = self.parser.add_argument_group('outlier_matching',
@@ -48,6 +49,10 @@ class ArgParser:
     @property
     def show_histogram(self):
         return self.args.show_histogram
+
+    @property
+    def show_histogram_control(self):
+        treturn self.args.show_histogram_control
 
     @property
     def full_histogram(self):
