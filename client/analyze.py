@@ -8,8 +8,9 @@ intf_times = open(sys.argv[1])
 # no_intf_times = open(sys.argv[2])
 
 def remove_outliers_pct(elements):
-    lt = np.percentile(elements, 0.05)
-    ht = np.percentile(elements, 99.95) 
+    mode = stats.mode(elements, axis=None)[0]
+    stdev = np.std(elements)
+    ht, lt = mode + 2 * stdev, mode - 2 * stdev
     return filter(lambda x: x <= ht and x >= lt, elements)
 
 def movingaverage (values, window):
@@ -49,20 +50,19 @@ def parse_client_times(times):
                 rtts_wo_flooder.append(((stime-first_start) / (10**9), rtt))
                 # rtts_wo_flooder.append(rtt)
     return rtts, rtts_w_flooder, rtts_wo_flooder
-#norm_starttimes = map(lambda x: (x - startimes[0]) / (10**9), startimes)
-#fig, ax = plt.subplots(1)
-#print(','.join(map(str, map(int, rtts))))
-#ax.plot(norm_starttimes, rtts, 'b')
-#plt.show()
+
 rtts, rtts_w_flooder, rtts_wo_flooder = parse_client_times(intf_times)
-
-
-bb = remove_outliers_pct([x[1] for x in rtts])
 plt.figure()
-plt.plot([x[0] for x in rtts], [x[1] for x in rtts])
+plt.plot(*zip(*rtts))
 plt.show()
-print(','.join([str(x[0]) for x in rtts]))
-print(','.join([str(x[1]) for x in rtts]))
+
+
+#bb = remove_outliers_pct([x[1] for x in rtts])
+#plt.figure()
+#plt.plot([x[0] for x in rtts], [x[1] for x in rtts])
+#plt.show()
+#print(','.join([str(x[0]) for x in rtts]))
+#print(','.join([str(x[1]) for x in rtts]))
 
 
 # r = movingaverage(rtts, 1000)
@@ -85,12 +85,12 @@ print(','.join([str(x[1]) for x in rtts]))
 # plt.legend()
 # plt.show()
 
-# # a = remove_outliers_pct(remove_outliers_pct(rtts_w_flooder))
-# # b = remove_outliers_pct(remove_outliers_pct(rtts_wo_flooder))
-# # plt.hist(a, bins=1000, color='Orange', alpha=0.5, label='With flooder')
-# # plt.hist(b, bins=1000, color='Blue', alpha=0.5, label='Without flooder')
-# # plt.legend()
-# # plt.show()
+# a = remove_outliers_pct(remove_outliers_pct(rtts_w_flooder))
+# b = remove_outliers_pct(remove_outliers_pct(rtts_wo_flooder))
+# plt.hist(a, bins=1000, color='Orange', alpha=0.5, label='With flooder')
+# plt.hist(b, bins=1000, color='Blue', alpha=0.5, label='Without flooder')
+# plt.legend()
+# plt.show()
 
 
 
