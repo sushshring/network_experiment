@@ -5,7 +5,7 @@
 #include "flooder.h"
 struct timespec tstart = {0,0};
 
-flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, int scale) {
+flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, int scale, int with_control) {
   //
   //
   // LOCAL VARIABLES
@@ -13,6 +13,7 @@ flooder_socks *flooder_create(char *addr, int port, char *client_addr, int clien
   //
   flooder_socks *socks = malloc(sizeof(flooder_socks));
   socks->scale = scale;
+  socks->with_control = with_control;
   logMessage(LOG_INFO_LEVEL, "Writing to UDP socket: %s:%d", addr, port);
   if ((socks->udp_sock = cmpsc311_client_connect_udp((unsigned char *) addr, (unsigned short) port)) == -1) {
     logMessage(LOG_ERROR_LEVEL, "Could not listen\n");
@@ -42,8 +43,9 @@ int flooder_run(flooder_socks *socks) {
   char *rbuf = malloc(data_size);
   char client_start[6] = "START";
   char client_end[6] = "ENDIN";
-  int rfh;
-  time_t clocktime, currenttime;
+  char client_control[6] = "CONTRO";
+  int rfh, notified_control = 0;
+  time_t clocktime, currenttime, start_time;
   struct timespec clock = {0, 0};
   long send_bytes = 0, sent_bytes = 0;
 
@@ -55,6 +57,8 @@ int flooder_run(flooder_socks *socks) {
     logMessage(LOG_ERROR_LEVEL, "Failed to read from /dev/urandom\n");
     return -1;
   }
+  clock_gettime(CLOCK_REALTIME, &clock);
+  start_time = clock.tv_sec;
   while (1) {
     sleep(5);
     logMessage(LOG_INFO_LEVEL, "Notifying start to client\n");
@@ -66,7 +70,17 @@ int flooder_run(flooder_socks *socks) {
     log_request_start();
     send_bytes = 0;
     sent_bytes = 0;
+    if (socks->with_control && currenttime - start_time >= 60 && !notified_control) {
+      logMessage(LOG_INFO_LEVEL, "Starting control sequence\n");
+      write(socks->client_sock, client_control, 6);
+      notified_control = 1;
+    }
     while (currenttime < clocktime + 5) {
+      if (socks->with_control && notified_control) {
+        clock_gettime(CLOCK_REALTIME, &clock);
+        currenttime = clock.tv_sec;
+        continue;
+      }
       if (write(socks->udp_sock, rbuf, data_size) == -1) {
         logMessage(LOG_ERROR_LEVEL, "Failed to write to UDP socket. Reason: %s\n", strerror(errno));
       } else {

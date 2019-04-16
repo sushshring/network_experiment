@@ -35,6 +35,8 @@ void *flooder_checks(void *flooder_fh) {
         write(timing_logfh, "FLOODER_START\n", 14);
       } else if (strncmp(msg, "ENDIN", 6) == 0) {
         write(timing_logfh, "FLOODER_END\n", 12);
+      } else if (strncmp(msg, "CONTRO", 6) == 0) {
+        write(timing_logfh, "FLOODER_CONTROL\n", 16);
       }
     }
   }

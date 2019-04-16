@@ -127,7 +127,7 @@ from parser.data_parser import Parser
 def main():
     arg_parser = ArgParser()
     parser = Parser(arg_parser.file)
-    analyzer = Analyzer(parser.rtts)
+    analyzer = Analyzer(parser.rtts, parser.rtts_control)
     analyzer.analyze(arg_parser)
 
 
