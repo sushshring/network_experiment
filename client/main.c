@@ -89,6 +89,8 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Missing command line parameters, use -h to see usage, aborting.\n");
     return ( -1 );
   }
+  pthread_mutex_init(&lock, NULL);
+  flooder_state = 0;
   logMessage(LOG_INFO_LEVEL, "Starting flooder socket\n");
   if (( flooder_sock = cmpsc311_connect_server(6001)) == -1) {
     fprintf(stderr, "Could not setup connection from flooder\n");

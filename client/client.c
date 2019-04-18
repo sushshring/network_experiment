@@ -27,9 +27,6 @@ int client_connect(unsigned char *server_addr, uint16_t port) {
     logMessage(LOG_ERROR_LEVEL, "Error opening log : %s (%s)", TIME_LOG_NAME, strerror(errno));
     return ( -1 );
   }
-
-  pthread_mutex_init(&lock, NULL);
-  flooder_state = 0;
   return socketfh;
 }
 
@@ -54,7 +51,7 @@ int client_run(char *ip, int port) {
 
 void update_request_counter(int *request_counter) {
   pthread_mutex_lock(&lock);
-  logMessage(LOG_INFO_LEVEL, "Currently send %d requests \n", *request_counter);
+  logMessage(LOG_INFO_LEVEL, "Currently sent %d requests \n", *request_counter);
   if (!flooder_state) {
     ( *request_counter )++;
   } else {
