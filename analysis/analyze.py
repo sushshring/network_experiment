@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.7
 from analyzer import Analyzer
 from parser.arg_parser import ArgParser
 from parser.data_parser import Parser
@@ -9,39 +10,12 @@ from parser.data_parser import Parser
 #     return sma
 
 
-# bb = remove_outliers_pct([x[1] for x in rtts])
-# plt.figure()
-# plt.plot([x[0] for x in rtts], [x[1] for x in rtts])
-# plt.show()
-# print(','.join([str(x[0]) for x in rtts]))
-# print(','.join([str(x[1]) for x in rtts]))
-
-
 # r = movingaverage(rtts, 1000)
 # lt = np.percentile(r, 0.05)
 # ht = np.percentile(r, 99.95) 
 # r_nooutlier = filter(lambda x: x <= ht and x >= lt, r)
 # plt.figure()
 # plt.hist(r_nooutlier, bins=1000)
-# plt.show()
-
-
-# a = movingaverage(rtts_w_flooder, 100)
-# b = movingaverage(rtts_wo_flooder, 100)
-# print(len(a), len(b))
-# print(np.mean(a), np.mean(b))
-# print(np.std(a), np.std(b))
-# print(stats.mannwhitneyu(a, b, False))
-# plt.hist(a, bins=1000, color='Orange', alpha=0.5, label='With flooder')
-# plt.hist(b, bins=1000, color='Blue', alpha=0.5, label='Without flooder')
-# plt.legend()
-# plt.show()
-
-# a = remove_outliers_pct(remove_outliers_pct(rtts_w_flooder))
-# b = remove_outliers_pct(remove_outliers_pct(rtts_wo_flooder))
-# plt.hist(a, bins=1000, color='Orange', alpha=0.5, label='With flooder')
-# plt.hist(b, bins=1000, color='Blue', alpha=0.5, label='Without flooder')
-# plt.legend()
 # plt.show()
 
 # def norm_fit_plot(data):
@@ -78,51 +52,6 @@ from parser.data_parser import Parser
 # print(stats.kstest(sample, 'norm', args=(np.mean(sample), np.std(sample))))
 # ks_plot_norm(rtts)
 # plt.hist(sample, bins=100)
-# plt.show()
-
-# fig1, ax = plt.subplots(1)
-# ax.scatter(*zip(*rtts_wo_flooder), label='Without flooder')
-# ax.scatter(*zip(*rtts_w_flooder), label='With flooder')
-# ax.plot(*zip(*rtts))
-# ax.legend()
-
-
-# fig2, ax2 = plt.subplots(1)
-# b, a = signal.butter(3, 0.05)
-# justSendTime, justRtt = [x[0] for x in rtts], [x[1] for x in rtts]
-# print(','.join([str(x) for x in justRtt]) + ';')
-# print(','.join([str(x) for x in justSendTime]) + ';')
-# filtered = signal.lfilter(b, a, justRtt)
-# norm_filtered = np.divide(np.subtract(filtered, np.mean(filtered)), np.std(filtered))
-
-# t = np.linspace(0, justSendTime[-1] - justSendTime[0], len(justSendTime))
-# pureSquare = signal.square(0.1 * t * (2 * np.pi))
-
-# ax2.plot(justSendTime, norm_filtered)
-# ax2.plot(justSendTime, pureSquare)
-# nrtts, nrtts_w_flodoer, nrtts_wo_flooder = parse_client_times(no_intf_times)
-# njustSendTime, njustRtt = [x[0] for x in nrtts], [x[1] for x in nrtts] 
-# plt.show()
-# D, pval = stats.ks_2samp(njustRtt, justRtt)
-# print(D, pval)
-
-# D, pval = stats.ks_2samp(justRtt, pureSquare)
-# print(D, pval)
-# D, pval = stats.ks_2samp(njustRtt, pureSquare)
-# print(D, pval)
-# fig2, ax3 = plt.subplots(1)
-# ax3.scatter(*zip(*rtts_wo_flooder), label='Without flooder')
-# # ax3.scatter(*zip(*rtts_w_flooder), label='With flooder')
-# ax3.plot(*zip(*rtts))
-# ax3.legend()
-# fig4, ax4 = plt.subplots(1)
-
-# nb, na = signal.butter(3, 0.05)
-# njustSendTime, njustRtt = [x[0] for x in nrtts], [x[1] for x in nrtts]
-# nfiltered = signal.lfilter(nb, na, njustRtt)
-# nnorm_filtered = np.divide(np.subtract(nfiltered, np.mean(nfiltered)), np.std(nfiltered))
-# ax4.plot(njustSendTime, nnorm_filtered)
-# ax4.plot(t, pureSquare)
 # plt.show()
 def main():
     arg_parser = ArgParser()

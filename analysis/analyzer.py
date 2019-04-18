@@ -1,3 +1,4 @@
+import math
 from typing import List
 
 import matplotlib
@@ -19,13 +20,23 @@ class plotter:
 
     def __call__(self, func):
         def plot(*args, **kwargs):
-            n = len(plt.gcf().axes)
-            for i in range(n):
-                plt.gcf().axes[i].change_geometry(n + 1, 1, i + 1)
-            ax = plt.subplot(n + 1, 1, n + 1, label=self.label)
+            ax = plotter.get_new_subplot(self.label)
             return func(*args, **kwargs, ax=ax)
-
         return plot
+
+    @staticmethod
+    def get_new_subplot(label: str) -> Axes:
+        n = len(plt.gcf().axes)
+        for i in range(n):
+            plt.gcf().axes[i].change_geometry(max(math.ceil(math.sqrt(n + 1)), 1),
+                                              max(round(math.sqrt(n + 1)), 1),
+                                              i + 1)
+        ax = plt.subplot(max(math.ceil(math.sqrt(n + 1)), 1),
+                         max(round(math.sqrt(n + 1)), 1),
+                         n + 1,
+                         label=label)
+        return ax
+
 
 
 class Analyzer:
@@ -51,7 +62,8 @@ class Analyzer:
         return signal.lfilter(b, a, data)
 
     def analyze(self, arg_parser: ArgParser):
-        plt.figure()
+        fig = plt.figure()
+        fig.suptitle(arg_parser.title)
         if arg_parser.show_rtts:
             self.plot_rtts(arg_parser.remove_outliers, arg_parser.outlier_removal_type)
         if arg_parser.show_histogram:
@@ -147,5 +159,28 @@ class Analyzer:
         ax.set_title('RTT histogram with control')
 
     def get_cr_detection_score(self):
-
+        print(self.mann_whitney_test())
+        print(self.ks_test())
         pass
+
+    def mann_whitney_test(self):
+        rtts = Analyzer._filter_data(self.data.normalized())
+        rtts_control = Analyzer._filter_data(self.control.normalized())
+        stat, pval = stats.mannwhitneyu(rtts, rtts_control, alternative='greater')
+        return "Mann Whitney Test: statistic value: %0.2f, pvalue: %0.2f" % (stat, pval)
+
+    @plotter('Kolmogorov Smirnov Test')
+    def ks_test(self, ax: Axes):
+        rtts = Analyzer._filter_data(self.data.normalized())
+        rtts_control = Analyzer._filter_data(self.control.normalized())
+        stat, pval = stats.ks_2samp(rtts, rtts_control)
+        ax.hist(rtts, color='Orange', bins=1000, alpha=0.5, label='Normalized RTTs with flooder')
+        ax.hist(rtts_control, color='Blue', bins=1000, alpha=0.5, label='Normalized RTTs under control')
+        ax.legend()
+        ax.set_title('RTT histogram normalized by mean and stdev')
+
+        hist = stats.rv_histogram(np.histogram(rtts_control, bins=1000))
+        ax1 = plotter.get_new_subplot('QQ Plot for RTTs with flooder against control')
+        stats.probplot(rtts, plot=ax1, fit=True, dist=hist)
+        ax1.set_title('RTTs QQ Plot')
+        return "Kolmogorov Smirnov Two Sample Test: statistic value: %0.2f, pvalue: %0.2f" % (stat, pval)

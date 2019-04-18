@@ -28,12 +28,35 @@ int client_connect(unsigned char *server_addr, uint16_t port) {
     return ( -1 );
   }
 
+  pthread_mutex_init(&lock, NULL);
+  flooder_state = 0;
   return socketfh;
 }
 
-
-
 int client_run(int socketfh) {
+  //
+  //
+  //
+  // LOCAL VARIABLES
+  //
+  //
+  int request_counter = 0;
+  while (request_counter >= 0) {
+    client_send_request(socketfh, &request_counter);
+  }
+}
+
+void update_request_counter(int *request_counter) {
+  pthread_mutex_lock(&lock);
+  if (!flooder_state) {
+    (*request_counter)++;
+  } else {
+    (*request_counter)--;
+  }
+  pthread_mutex_lock(&lock);
+}
+
+int client_send_request(int socketfh, int *request_counter) {
   //
   //
   // LOCAL VARIABLES
@@ -69,8 +92,8 @@ int client_run(int socketfh) {
     cmpsc311_read_bytes(socketfh, sizeof(ProtoMsg), marshallBuffer);
     unmarshall(marshallBuffer, &msg);
     logAssert(msg.msgType == FILE_BLOCK || msg.msgType == FILE_COMPLETE, __FILE__, __LINE__,
-                  "Expecting message type %d or %d, got %d\n", FILE_BLOCK, FILE_COMPLETE,
-                  msg.msgType);
+              "Expecting message type %d or %d, got %d\n", FILE_BLOCK, FILE_COMPLETE,
+              msg.msgType);
     readBytes += MAX_BLOCK_SIZE;
     switch (msg.msgType) {
       case FILE_BLOCK:
@@ -80,7 +103,7 @@ int client_run(int socketfh) {
         msg.msgType = FILE_BLOCK_ACK;
         marshall(&msg, marshallBuffer);
         cmpsc311_send_bytes(socketfh, sizeof(ProtoMsg), marshallBuffer);
-        log_request_end();
+        log_request_end(request_counter);
         break;
       case FILE_COMPLETE:
         // continue reading
@@ -89,7 +112,7 @@ int client_run(int socketfh) {
         msg.msgType = FILE_COMPLETE_ACK;
         marshall(&msg, marshallBuffer);
         cmpsc311_send_bytes(socketfh, sizeof(ProtoMsg), marshallBuffer);
-        log_request_end();
+        log_request_end(request_counter);
         fileavlb = 0;
         break;
       default:
@@ -110,9 +133,10 @@ void log_request_start() {
   write(timing_logfh, msg, strlen(msg));
 }
 
-void log_request_end() {
+void log_request_end(int *request_counter) {
   clock_gettime(CLOCK_REALTIME, &tend);
   char msg[128];
   sprintf(msg, "END: %ld\n", BILLION * tend.tv_sec + tend.tv_nsec);
   write(timing_logfh, msg, strlen(msg));
+  update_request_counter(request_counter);
 }

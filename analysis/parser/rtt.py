@@ -1,5 +1,5 @@
-from typing import List, Tuple, Union
-
+from typing import List, Tuple
+import numpy as np
 
 class Rtt:
     rtts_wo_flooder: List[Tuple[float, float]]
@@ -21,6 +21,12 @@ class Rtt:
             (List[Tuple[float, float]], List[Tuple[float, float]], List[Tuple[float, float]]):
         return self._rtts, self._rtts_w_flooder, self._rtts_wo_flooder
 
+    def normalized(self):
+        rtts = self.rtts()[0]
+        return np.divide(np.subtract(rtts, np.mean(rtts)), np.std(rtts))
+
     @staticmethod
     def __get_without_start_time(elements: List[Tuple[float, float]]) -> List[float]:
+        if len(elements) == 0:
+            return []
         return list(list(zip(*elements))[1])

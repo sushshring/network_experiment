@@ -22,10 +22,12 @@ class ArgParser:
         # Data File parsing
         self.parser.add_argument('filename', metavar='filename', type=argparse.FileType('r'),
                                  help='The file name containing raw output data')
+        self.parser.add_argument('title', metavar='title', type=str, help='The title of the plot')
         # Top level arguments for specific plots
         self.parser.add_argument('--show-rtts', action='store_true', help='Show the rtt plot')
         self.parser.add_argument('--show-histogram', action='store_true', help='Show the rtt histogram')
-        self.parser.add_argument('--show-histogram-control', action='store_true', help='Show the rtt histogram with control sequence')
+        self.parser.add_argument('--show-histogram-control', action='store_true',
+                                 help='Show the rtt histogram with control sequence')
 
         # Group level arguments for individual plots
         outlier_matching = self.parser.add_argument_group('outlier_matching',
@@ -69,3 +71,7 @@ class ArgParser:
     @property
     def outlier_removal_type(self):
         return self.args.outlier_removal_type
+
+    @property
+    def title(self):
+        return self.args.title
