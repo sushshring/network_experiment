@@ -57,13 +57,13 @@ int flooder_run(flooder_socks *socks) {
     logMessage(LOG_ERROR_LEVEL, "Failed to read from /dev/urandom\n");
     return -1;
   }
-  clock_gettime(CLOCK_REALTIME, &clock);
+  clock_gettime(CLOCK_MONOTONIC, &clock);
   start_time = clock.tv_sec;
   while (1) {
     sleep(5);
     logMessage(LOG_INFO_LEVEL, "Notifying start to client\n");
     write(socks->client_sock, client_start, 6);
-    clock_gettime(CLOCK_REALTIME, &clock);
+    clock_gettime(CLOCK_MONOTONIC, &clock);
     clocktime = clock.tv_sec;
     currenttime = clocktime;
     logMessage(LOG_INFO_LEVEL, "Running flooder\n");
@@ -77,7 +77,7 @@ int flooder_run(flooder_socks *socks) {
     }
     while (currenttime < clocktime + 5) {
       if (socks->with_control && notified_control) {
-        clock_gettime(CLOCK_REALTIME, &clock);
+        clock_gettime(CLOCK_MONOTONIC, &clock);
         currenttime = clock.tv_sec;
         continue;
       }
@@ -87,7 +87,7 @@ int flooder_run(flooder_socks *socks) {
         sent_bytes += data_size;
       }
       send_bytes += data_size;
-      clock_gettime(CLOCK_REALTIME, &clock);
+      clock_gettime(CLOCK_MONOTONIC, &clock);
       currenttime = clock.tv_sec;
     }
     logMessage(LOG_INFO_LEVEL, "Notifying end to client\n");
@@ -98,7 +98,7 @@ int flooder_run(flooder_socks *socks) {
 }
 
 void log_request_start() {
-  clock_gettime(CLOCK_REALTIME, &tstart);
+  clock_gettime(CLOCK_MONOTONIC, &tstart);
   char msg[128];
   sprintf(msg, "START: %ld\n", BILLION * tstart.tv_sec + tstart.tv_nsec);
   write(timing_logfh, msg, strlen(msg));

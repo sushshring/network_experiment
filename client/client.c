@@ -44,6 +44,7 @@ int client_run(int socketfh) {
   while (request_counter >= 0) {
     client_send_request(socketfh, &request_counter);
   }
+  return 0;
 }
 
 void update_request_counter(int *request_counter) {
