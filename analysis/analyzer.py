@@ -5,6 +5,7 @@ import matplotlib
 import numpy as np
 from matplotlib.axes import Axes
 from scipy import stats, signal
+from sklearn.metrics import mean_squared_error
 
 from outliers_filter_mode import OutliersFilterMode
 from parser.arg_parser import ArgParser
@@ -52,8 +53,8 @@ class Analyzer:
         return list(filter(lambda x: ht >= x >= lt, elements))
 
     @staticmethod
-    def _remove_outliers_pct(elements):
-        lt, ht = np.percentile(elements, 0.05), np.percentile(elements, 0.95)
+    def _remove_outliers_pct(elements, lower=5, upper=95):
+        lt, ht = np.percentile(elements, lower), np.percentile(elements, upper)
         return list(filter(lambda x: ht >= x >= lt, elements))
 
     @staticmethod
@@ -161,6 +162,7 @@ class Analyzer:
     def get_cr_detection_score(self):
         print(self.mann_whitney_test())
         print(self.ks_test())
+        print(mean_squared_error())
         pass
 
     def mann_whitney_test(self):
@@ -171,8 +173,8 @@ class Analyzer:
 
     @plotter('Kolmogorov Smirnov Test')
     def ks_test(self, ax: Axes):
-        rtts = Analyzer._filter_data(self.data.normalized())
-        rtts_control = Analyzer._filter_data(self.control.normalized())
+        rtts = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.data.normalized()), lower=1, upper=99)
+        rtts_control = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.control.normalized()), lower=1, upper=99)
         stat, pval = stats.ks_2samp(rtts, rtts_control)
         ax.hist(rtts, color='Orange', bins=1000, alpha=0.5, label='Normalized RTTs with flooder')
         ax.hist(rtts_control, color='Blue', bins=1000, alpha=0.5, label='Normalized RTTs under control')
