@@ -54,7 +54,7 @@ void update_request_counter(int *request_counter) {
   } else {
     (*request_counter)--;
   }
-  pthread_mutex_lock(&lock);
+  pthread_mutex_unlock(&lock);
 }
 
 int client_send_request(int socketfh, int *request_counter) {

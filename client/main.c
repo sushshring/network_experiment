@@ -40,7 +40,7 @@ void *flooder_checks(void *flooder_fh) {
         write(timing_logfh, "FLOODER_CONTROL\n", 16);
         pthread_mutex_lock(&lock);
         flooder_state = 1;
-        pthread_mutex_lock(&lock);
+        pthread_mutex_unlock(&lock);
       }
     }
   }
