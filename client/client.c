@@ -54,6 +54,7 @@ int client_run(char *ip, int port) {
 
 void update_request_counter(int *request_counter) {
   pthread_mutex_lock(&lock);
+  logMessage(LOG_INFO_LEVEL, "Currently send %d requests \n", *request_counter);
   if (!flooder_state) {
     ( *request_counter )++;
   } else {
