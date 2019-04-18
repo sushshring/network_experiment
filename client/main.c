@@ -105,15 +105,7 @@ int main(int argc, char *argv[]) {
   pthread_create(&newthread, NULL, flooder_checks, fsock);
   pthread_detach(newthread);
   logMessage(LOG_INFO_LEVEL, "New client\n");
-  if (
-    ( socketfh = client_connect(
-      (unsigned char *) argv[optind],
-      (uint16_t) atoi(argv[optind + 1])
-    )) == -1) {
-    logMessage(LOG_ERROR_LEVEL, "Client failed to connect\n");
-    return ( -1 );
-  }
-  if (client_run(socketfh) == -1) {
+  if (client_run(argv[optind], (uint16_t) atoi(argv[optind + 1])) == -1) {
     logMessage(LOG_ERROR_LEVEL, "Client had error\n");
     return ( -1 );
   }

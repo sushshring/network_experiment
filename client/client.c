@@ -4,8 +4,8 @@
 
 #include "client.h"
 
-struct timespec tstart = {0,0};
-struct timespec tend = {0, 0};
+struct timespec tstart = { 0, 0 };
+struct timespec tend = { 0, 0 };
 
 int client_connect(unsigned char *server_addr, uint16_t port) {
   //
@@ -33,7 +33,7 @@ int client_connect(unsigned char *server_addr, uint16_t port) {
   return socketfh;
 }
 
-int client_run(int socketfh) {
+int client_run(char *ip, int port) {
   //
   //
   //
@@ -41,7 +41,12 @@ int client_run(int socketfh) {
   //
   //
   int request_counter = 0;
+  int socketfh = 0;
   while (request_counter >= 0) {
+    if (( socketfh = client_connect((unsigned char *) ip, port)) == -1) {
+      logMessage(LOG_ERROR_LEVEL, "Client failed to connect\n");
+      return ( -1 );
+    }
     client_send_request(socketfh, &request_counter);
   }
   return 0;
@@ -50,9 +55,9 @@ int client_run(int socketfh) {
 void update_request_counter(int *request_counter) {
   pthread_mutex_lock(&lock);
   if (!flooder_state) {
-    (*request_counter)++;
+    ( *request_counter )++;
   } else {
-    (*request_counter)--;
+    ( *request_counter )--;
   }
   pthread_mutex_unlock(&lock);
 }
