@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib.axes import Axes
 from scipy import stats, signal
 from sklearn.metrics import mean_squared_error
-
+from itertools import *
 from outliers_filter_mode import OutliersFilterMode
 from parser.arg_parser import ArgParser
 from parser.rtt import Rtt
@@ -160,10 +160,16 @@ class Analyzer:
         ax.set_title('RTT histogram with control')
 
     def get_cr_detection_score(self):
+        mse_scale = 69.45
         print(self.mann_whitney_test())
         print(self.ks_test())
         rtts, rtts_control = self.get_comparison_rtts()
-        print('MSE score: %f' % mean_squared_error())
+        rtts = sorted(rtts)
+        rtts_control = sorted(rtts_control)
+        rtts, rtts_control = zip(*zip_longest(rtts, rtts_control, fillvalue=np.mean(rtts)))
+        mse_score = mean_squared_error(rtts_control, rtts)
+        print('MSE score: %f' % mse_score)
+        print('Adversary strength: %f' % (mse_score * mse_scale))
         pass
 
     def mann_whitney_test(self):
