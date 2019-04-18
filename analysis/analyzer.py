@@ -162,7 +162,8 @@ class Analyzer:
     def get_cr_detection_score(self):
         print(self.mann_whitney_test())
         print(self.ks_test())
-        print(mean_squared_error())
+        rtts, rtts_control = self.get_comparison_rtts()
+        print('MSE score: %f' % mean_squared_error())
         pass
 
     def mann_whitney_test(self):
@@ -173,8 +174,7 @@ class Analyzer:
 
     @plotter('Kolmogorov Smirnov Test')
     def ks_test(self, ax: Axes):
-        rtts = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.data.normalized()), lower=1, upper=99)
-        rtts_control = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.control.normalized()), lower=1, upper=99)
+        rtts, rtts_control = self.get_comparison_rtts()
         stat, pval = stats.ks_2samp(rtts, rtts_control)
         ax.hist(rtts, color='Orange', bins=1000, alpha=0.5, label='Normalized RTTs with flooder')
         ax.hist(rtts_control, color='Blue', bins=1000, alpha=0.5, label='Normalized RTTs under control')
@@ -186,3 +186,9 @@ class Analyzer:
         stats.probplot(rtts, plot=ax1, fit=True, dist=hist)
         ax1.set_title('RTTs QQ Plot')
         return "Kolmogorov Smirnov Two Sample Test: statistic value: %0.2f, pvalue: %0.2f" % (stat, pval)
+
+    def get_comparison_rtts(self):
+        rtts = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.data.normalized()), lower=1, upper=99)
+        rtts_control = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.control.normalized()), lower=1,
+                                                     upper=99)
+        return rtts, rtts_control
