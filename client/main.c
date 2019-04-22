@@ -112,4 +112,5 @@ int main(int argc, char *argv[]) {
     return ( -1 );
   }
   logMessage(LOG_INFO_LEVEL, "Client completed run\n");
+  write(fsock, "\n", 1);
 }

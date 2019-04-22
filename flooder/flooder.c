@@ -2,6 +2,7 @@
 // Created by sps5394 on 11/7/18.
 //
 #include <fcntl.h>
+#include <sys/socket.h>
 #include "flooder.h"
 struct timespec tstart = {0,0};
 
@@ -12,6 +13,7 @@ flooder_socks *flooder_create(char *addr, int port, char *client_addr, int clien
   //
   //
   flooder_socks *socks = malloc(sizeof(flooder_socks));
+  pthread_t flooder_check;
   socks->scale = scale;
   socks->with_control = with_control;
   logMessage(LOG_INFO_LEVEL, "Writing to UDP socket: %s:%d", addr, port);
@@ -30,7 +32,19 @@ flooder_socks *flooder_create(char *addr, int port, char *client_addr, int clien
     logMessage(LOG_ERROR_LEVEL, "Error opening log : %s (%s)", TIME_LOG_NAME, strerror(errno));
     return NULL;
   }
+  pthread_create(&flooder_check, NULL, (void *(*)(void *)) flooder_test_connection, &socks->client_sock);
+  pthread_detach(flooder_check);
   return socks;
+}
+
+void *flooder_test_connection(const int *socket_fd) {
+  void *buf = malloc(1);
+  while (1) {
+    read(*socket_fd, buf, 1);
+    sleep(5);
+    logMessage(LOG_INFO_LEVEL, "Closing flooder\n");
+    exit(5);
+  }
 }
 
 int flooder_run(flooder_socks *socks) {

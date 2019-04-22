@@ -23,6 +23,7 @@ class plotter:
         def plot(*args, **kwargs):
             ax = plotter.get_new_subplot(self.label)
             return func(*args, **kwargs, ax=ax)
+
         return plot
 
     @staticmethod
@@ -37,7 +38,6 @@ class plotter:
                          n + 1,
                          label=label)
         return ax
-
 
 
 class Analyzer:
@@ -74,6 +74,7 @@ class Analyzer:
             self.plot_histogram_control(full_histogram=arg_parser.full_histogram,
                                         remove_outliers=arg_parser.remove_outliers,
                                         outliers_mode=arg_parser.outlier_removal_type)
+        if arg_parser.cr_detection:
             self.get_cr_detection_score()
         plt.show()
         pass
@@ -161,16 +162,12 @@ class Analyzer:
 
     def get_cr_detection_score(self):
         mse_scale = 69.45
-        print(self.mann_whitney_test())
-        print(self.ks_test())
         rtts, rtts_control = self.get_comparison_rtts()
         rtts = sorted(rtts)
         rtts_control = sorted(rtts_control)
         rtts, rtts_control = zip(*zip_longest(rtts, rtts_control, fillvalue=np.mean(rtts)))
         mse_score = mean_squared_error(rtts_control, rtts)
-        print('MSE score: %f' % mse_score)
-        print('Adversary strength: %f' % (mse_score * mse_scale))
-        pass
+        return mse_score * mse_scale
 
     def mann_whitney_test(self):
         rtts = Analyzer._filter_data(self.data.normalized())

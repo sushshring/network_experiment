@@ -43,4 +43,6 @@ flooder_socks *flooder_create(char *addr, int port, char *client_addr, int clien
 int flooder_run(flooder_socks *);
 
 void log_request_start();
+
+void * flooder_test_connection(const int *socket_fd);
 #endif //CLIENT_flooder_H

@@ -26,6 +26,7 @@ class ArgParser:
         # Top level arguments for specific plots
         self.parser.add_argument('--show-rtts', action='store_true', help='Show the rtt plot')
         self.parser.add_argument('--show-histogram', action='store_true', help='Show the rtt histogram')
+        self.parser.add_argument('--cr-detection', action='store_true', help='Calculate the CR detection score')
         self.parser.add_argument('--show-histogram-control', action='store_true',
                                  help='Show the rtt histogram with control sequence')
 
@@ -51,6 +52,10 @@ class ArgParser:
     @property
     def show_histogram(self):
         return self.args.show_histogram
+
+    @property
+    def show_histogram(self):
+        return self.args.cr_detection
 
     @property
     def show_control_histogram(self):
