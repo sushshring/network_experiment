@@ -13,8 +13,8 @@ def run_experiment(server='192.168.1.103', port='6000', orchestrator='k8', flood
     #analysis_cmd = ['./analyze.py', '--show-rtts', '--show-histogram', '--show-histogram-control', '--remove-outliers', '--outlier-removal-type', '3', '--full-histogram', '../client/client_times', '%s with %s flooding' % (orchestrator, flooding)]
     #proc1 = subprocess.run(analysis_cmd)
     now = datetime.now()
-    mv_cmd = ['mv', '../client/client_times', '../data/client_times_%s_%s_intf_control_%s%s%s_%02d%02d' % (
-        orchestrator, flooding, now.month, now.day, now.year, now.hour, now.second)]
+    mv_cmd = ['mv', '../client/client_times', '../data/%s/client_times_%s_%s_intf_control_%s%s%s_%02d%02d' % (
+        orchestrator, orchestrator, flooding, now.month, now.day, now.year, now.hour, now.minute)]
     proc2 = subprocess.run(mv_cmd)
     return 0
     pass
