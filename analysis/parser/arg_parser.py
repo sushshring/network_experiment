@@ -54,7 +54,7 @@ class ArgParser:
         return self.args.show_histogram
 
     @property
-    def show_histogram(self):
+    def cr_detection(self):
         return self.args.cr_detection
 
     @property
