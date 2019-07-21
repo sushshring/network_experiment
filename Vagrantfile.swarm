@@ -7,10 +7,10 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define :target_vm_swarm do |target_vm_swarm|
     target_vm_swarm.vm.box = "generic/ubuntu1604"
+    target_vm_swarm.vm.network :forwarded_port, guest: 30129, host: 6000, host_ip: "*"
     target_vm_swarm.vm.network :private_network,
       :libvirt__network_name => "default"
   end
-  config.vm.network :forwarded_port, guest: 30129, host: 6000, host_ip: "*"
   config.vm.provision :shell, path: "bootstrap_swarm.sh"
     # target_vm.vm.network :public_network, :dev => "eno1"
   config.vm.provider :libvirt do |libvirt|
