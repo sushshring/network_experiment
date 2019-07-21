@@ -4,7 +4,6 @@ matplotlib.use('Qt5Agg')
 import numpy as np
 
 from orchestrationplatform import OrchestrationPlatform
-from concurrent import futures
 
 import matplotlib.pyplot as plt
 
@@ -12,8 +11,11 @@ import matplotlib.pyplot as plt
 def main():
     plt.figure()
     platforms = [OrchestrationPlatform(name='k8', flooding_level='quad'),
+                 OrchestrationPlatform(name='k8', flooding_level='none', glob='../data/client_times_%s_%s_intf_control_*' % ('k8', 'no')),
                  OrchestrationPlatform(name='helios', flooding_level='quad'),
-                 OrchestrationPlatform(name='swarm', flooding_level='quad')]
+                 OrchestrationPlatform(name='helios', flooding_level='none'),
+                 OrchestrationPlatform(name='swarm', flooding_level='quad'),
+                 OrchestrationPlatform(name='swarm', flooding_level='none')]
     for platform in platforms:
         execute_platform_analysis(platform)
     # with futures.ProcessPoolExecutor() as pool:
@@ -23,7 +25,9 @@ def main():
 
 
 def execute_platform_analysis(platform):
-    print('Platform: %s, adversary score: %f' % (platform.name, np.mean(platform.adv_score)))
+    scores = [np.mean(x) for x in zip(*platform.adv_score)]
+    print('Platform: %s, flooding: %s' % (platform.name, platform.flooding_level))
+    print(scores)
     platform.plot_adv_score()
 
 

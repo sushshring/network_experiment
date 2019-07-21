@@ -9,14 +9,17 @@ from parser.data_parser import Parser
 
 
 class OrchestrationPlatform:
-    def __init__(self, name, flooding_level):
+    def __init__(self, name, flooding_level, glob=None):
         self._adv_score = None
         self.name = name
         self.flooding_level = flooding_level
+        if glob is None:
+            self.glob = '../data/%s/client_times_%s_%s_intf_control_*' % (self.name, self.name, self.flooding_level)
+        else:
+            self.glob = glob
 
     def get_files(self) -> Iterable[TextIO]:
-        glob_pattern = '../data/client_times_%s_%s_intf_control_*' % (self.name, self.flooding_level)
-        files = glob(glob_pattern)
+        files = glob(self.glob)
         for file in files:
             if not is_non_zero_file(file):
                 continue
@@ -35,10 +38,11 @@ class OrchestrationPlatform:
 
     @plotter('Platform adversary score distribution')
     def plot_adv_score(self, ax: Axes):
-        scores = self.adv_score
-        print(scores)
-        ax.hist(scores, color='Blue', alpha=0.5, label=self.name)
+        scores = zip(*self.adv_score)
+        for score in scores:
+            ax.hist(score, alpha=0.5, label=self.name)
         ax.set_title('Adversarial distribution for %s with %s flooding' % (self.name, self.flooding_level))
+        ax.legend()
         pass
 
     @property

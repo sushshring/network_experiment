@@ -166,20 +166,23 @@ class Analyzer:
         rtts = sorted(rtts)
         rtts_control = sorted(rtts_control)
         rtts, rtts_control = zip(*zip_longest(rtts, rtts_control, fillvalue=np.mean(rtts)))
-        mse_score = mean_squared_error(rtts_control, rtts)
+        # Generate histogram
         (hist, _), (hist_control, _) = np.histogram(rtts, bins=1000), np.histogram(rtts_control, bins=1000)
+        # Remove zeros
         hist = [0.0000000001 if x == 0 else x for x in hist]
         hist_control = [0.0000000001 if x == 0 else x for x in hist_control]
+
+        # Get all scores
+        mse_score = mean_squared_error(rtts_control, rtts)
         mse_score_hist = mean_squared_error(hist_control, hist)
         wass_metric = stats.wasserstein_distance(hist, hist_control)
         energy_distance = stats.energy_distance(hist, hist_control)
-        # prob, prob_control = [hist.pdf(x) for x in np.linspace(min(rtts), min(rtts_control))], [hist.pdf(x) for x in np.linspace(min(rtts), min(rtts_control))]
         kl_dist = stats.entropy(hist, hist_control)
-        ax = plotter.get_new_subplot('Probabily densities')
-        ax.plot(hist, 'r+')
-        ax.plot(hist_control, 'b+')
-        print('mse score: %f, mse_score_hist: %f, wasserstein distance: %f, energy distance: %f, kl_distance: %f' %(mse_score, mse_score_hist, wass_metric, energy_distance, kl_dist))
-        return mse_score * mse_scale
+
+        # ax = plotter.get_new_subplot('Probabily densities') ax.plot(hist, 'r+') ax.plot(hist_control, 'b+') print(
+        # 'mse score: %f, mse_score_hist: %f, wasserstein distance: %f, energy distance: %f, kl_distance: %f' %(
+        # mse_score, mse_score_hist, wass_metric, energy_distance, kl_dist))
+        return mse_score, mse_score_hist, wass_metric, energy_distance, kl_dist
 
     def mann_whitney_test(self):
         rtts = Analyzer._filter_data(self.data.normalized())
