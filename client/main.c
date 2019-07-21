@@ -26,15 +26,21 @@
   "    <server-address> - The IP address of the server to connect to\n" \
   "    <server-port> - The port of the server to connect to\n" \
   "\n"
+
 void *flooder_checks(void *flooder_fh) {
   const char *msg = malloc(6);
   while (1) {
-    if (!cmpsc311_read_bytes(* (int *)flooder_fh, 6, (unsigned char *) msg)) {
+    if (!cmpsc311_read_bytes(*(int *) flooder_fh, 6, (unsigned char *) msg)) {
       logMessage(LOG_INFO_LEVEL, "Received flooder message", msg);
       if (strncmp(msg, "START", 6) == 0) {
         write(timing_logfh, "FLOODER_START\n", 14);
       } else if (strncmp(msg, "ENDIN", 6) == 0) {
         write(timing_logfh, "FLOODER_END\n", 12);
+      } else if (strncmp(msg, "CONTRO", 6) == 0) {
+        write(timing_logfh, "FLOODER_CONTROL\n", 16);
+        pthread_mutex_lock(&lock);
+        flooder_state = 1;
+        pthread_mutex_unlock(&lock);
       }
     }
   }
@@ -51,7 +57,7 @@ void *flooder_checks(void *flooder_fh) {
 int main(int argc, char *argv[]) {
   // Local variables
   int ch, verbose = 0, log_initialized = 0, socketfh = 0, flooder_sock = 0, flooder_fh = 0;
-  srand ( time(NULL) );
+  srand(time(NULL));
   // Process command line parameters
   while (( ch = getopt(argc, argv, CLIENT_ARGUMENTS)) != -1) {
     switch (ch) {
@@ -83,12 +89,14 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Missing command line parameters, use -h to see usage, aborting.\n");
     return ( -1 );
   }
+  pthread_mutex_init(&lock, NULL);
+  flooder_state = 0;
   logMessage(LOG_INFO_LEVEL, "Starting flooder socket\n");
-  if ((flooder_sock = cmpsc311_connect_server(6001)) == -1) {
+  if (( flooder_sock = cmpsc311_connect_server(6001)) == -1) {
     fprintf(stderr, "Could not setup connection from flooder\n");
     return ( -1 );
   }
-  if ((flooder_fh = cmpsc311_accept_connection(flooder_sock)) == -1) {
+  if (( flooder_fh = cmpsc311_accept_connection(flooder_sock)) == -1) {
     fprintf(stderr, "Could not accept connection from flooder\n");
     return ( -1 );
   }
@@ -98,20 +106,11 @@ int main(int argc, char *argv[]) {
   *fsock = flooder_fh;
   pthread_create(&newthread, NULL, flooder_checks, fsock);
   pthread_detach(newthread);
-  while (1) {
-    logMessage(LOG_INFO_LEVEL, "New client\n");
-    if (
-      ( socketfh = client_connect(
-        (unsigned char *) argv[optind],
-        (uint16_t) atoi(argv[optind + 1])
-      )) == -1) {
-      logMessage(LOG_ERROR_LEVEL, "Client failed to connect\n");
-      return ( -1 );
-    }
-    if (client_run(socketfh) == -1) {
-      logMessage(LOG_ERROR_LEVEL, "Client had error\n");
-      return ( -1 );
-    }
-    logMessage(LOG_INFO_LEVEL, "Client completed run\n");
+  logMessage(LOG_INFO_LEVEL, "New client\n");
+  if (client_run(argv[optind], (uint16_t) atoi(argv[optind + 1])) == -1) {
+    logMessage(LOG_ERROR_LEVEL, "Client had error\n");
+    return ( -1 );
   }
+  logMessage(LOG_INFO_LEVEL, "Client completed run\n");
+  write(*fsock, "\n", 1);
 }

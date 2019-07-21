@@ -20,7 +20,7 @@ spec:
         image: sushshring/network-exp:flooder
         imagePullPolicy: Always
         command: ["./flooder"]
-        args: ["-v","-t", "2", "54.198.90.165", "6060"]
+        args: ["-v","-s", "1", "192.168.1.102", "6000", "192.168.1.100", "6001"]
 ---
 # kind: Endpoints
 # apiVersion: v1

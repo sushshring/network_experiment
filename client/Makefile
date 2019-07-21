@@ -2,8 +2,9 @@ LINK=gcc
 CC=gcc
 CFLAGS=-c -ggdb -Wall -I. -I/opt/local/include -I../lib -I../common -I../proto
 LINKFLAGS=-L. -g -ggdb -pthread -L/opt/local/lib -L../lib
-LIBFLAGS=-shared -Wall -pthread
-LINKLIBS=-lcmpsc311 -lgcrypt -lm -lrt
+LINKLIBS=-lgcrypt -lm
+LIB_DIR=../lib/
+LOCAL_LIBS=cmpsc311
 TARGETS=client
 
 CLIENT_OBJS= client.o \
@@ -18,8 +19,11 @@ CLIENT_OBJS= client.o \
 	$(CC) $(CFLAGS) -o $@ $<
 all: $(TARGETS)
 
-client: main.o client.o ../proto/proto.o ../common/ccommon.o $(LIBS)
-	$(LINK) $(LINKFLAGS) client.o main.o ../proto/proto.o ../common/ccommon.o $(LINKLIBS) -o $@
+$(LOCAL_LIBS):
+	make -C ../lib/
+
+client: main.o client.o ../proto/proto.o ../common/ccommon.o $(LOCAL_LIBS)
+	$(LINK) $(LINKFLAGS) client.o main.o ../proto/proto.o ../common/ccommon.o $(patsubst %,-l%,$(LOCAL_LIBS)) $(LINKLIBS) -o $@
 
 clean:
-	rm -f $(TARGETS) $(CLIENT_OBJS)
+	rm -f $(TARGETS) $(CLIENT_OBJS) $(LIB_DIR)$(patsubst %,lib%.a, $(LOCAL_LIBS))

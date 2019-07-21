@@ -4,7 +4,7 @@ After=docker.service
 
 [Service]
 Environment="KUBELET_KUBECONFIG_ARGS=--kubeconfig=/etc/kubernetes/kubelet.conf"
-Environment="KUBELET_CONFIG_ARGS=/var/lib/kubelet/config.yaml"
+Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"
 # This is a file that "kubeadm init" and "kubeadm join" generates at runtime, populating
 # the KUBELET_KUBEADM_ARGS variables dynamically
 EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env

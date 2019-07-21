@@ -5,7 +5,7 @@
 #ifndef NETWORK_EXPERIMENT_CLIENT_H
 #define NETWORK_EXPERIMENT_CLIENT_H
 #define FILENAME "large_file.txt"
-#define TIME_LOG_NAME "client_times"
+#define TIME_LOG_NAME "../client/client_times"
 #define LAMBDA 0.1
 #define BILLION 1000000000L
 
@@ -30,6 +30,8 @@
 
 // GLOBAL VARIABLES
 int timing_logfh;
+int flooder_state;
+pthread_mutex_t lock;
 extern struct timespec tstart;
 extern struct timespec tend;
 
@@ -48,12 +50,14 @@ int client_connect(unsigned char *server_addr, uint16_t port);
 // Function     : client_run
 // Description  : The simulator for the client. Requests a specific file at a
 //                exponentially distributed time
-// Inputs       : socketfh: File handle of connected socket
+// Inputs       : ip: IP address of serverm port of server
 // Outputs      : 0 if successful test, -1 if failure
-int client_run(int socketfh);
+int client_run(char *ip, int port);
+
+int client_send_request(int socketfh, int *request_counter);
 
 void log_request_start();
 
-void log_request_end();
+void log_request_end(int *request_counter);
 
 #endif //NETWORK_EXPERIMENT_CLIENT_H
