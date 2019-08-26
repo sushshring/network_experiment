@@ -15,7 +15,7 @@ public class App {
         String filename = args[2];
         BasicConfigurator.configure();
         Logger logger = Logger.getLogger(App.class);
-        Thread.sleep(30000);
+        Thread.sleep(10000);
         logger.debug("Starting application");
         try {
             new Executor(hostPort, znode, filename).run();

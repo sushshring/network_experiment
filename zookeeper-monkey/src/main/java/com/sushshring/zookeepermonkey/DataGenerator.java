@@ -9,13 +9,14 @@ import java.util.Random;
 
 public class DataGenerator extends DataWrangler implements Watcher, Runnable {
 
-    private final ZookeeperData zookeeperData;
+//    private final ZookeeperData zookeeperData;
     private final Random rng = new Random();
     private Logger logger = Logger.getLogger(DataGenerator.class);
 
     DataGenerator(ZookeeperData data) {
         super(data);
-        this.zookeeperData = data;
+        logger().debug("Starting generator");
+//        this.zookeeperData = data;
     }
 
     @Override
@@ -25,18 +26,19 @@ public class DataGenerator extends DataWrangler implements Watcher, Runnable {
 
     @Override
     protected void processEventInternal(WatchedEvent event) {
-        try {
-            Thread.sleep(this.generateWaitTime());
-            zookeeperData.getZookeeper().setData(zookeeperData.getZnode(), this.generateData(), 1);
-            this.run();
-        } catch (KeeperException | InterruptedException e) {
-            logger.error(e);
-        }
+
     }
 
     @Override
     protected void processResultInternal() {
-
+        try {
+            logger.debug("generating new data and storing in zk");
+            Thread.sleep(this.generateWaitTime());
+            zk.getZookeeper().setData(zk.getZnode(), this.generateData(), -1);
+            this.run();
+        } catch (KeeperException | InterruptedException e) {
+            logger.error(e);
+        }
     }
 
     @Override
@@ -51,7 +53,7 @@ public class DataGenerator extends DataWrangler implements Watcher, Runnable {
             while (true) {
                 try {
                     logger.debug("Sending new message");
-                    zookeeperData.getZookeeper().setData(zookeeperData.getZnode(), this.generateData(), 1);
+                    zk.getZookeeper().setData(zk.getZnode(), this.generateData(), -1);
                     Thread.sleep(this.generateWaitTime());
                 } catch (InterruptedException | KeeperException e) {
                     logger.error(e);
@@ -67,6 +69,6 @@ public class DataGenerator extends DataWrangler implements Watcher, Runnable {
     }
 
     private long generateWaitTime() {
-        return this.rng.nextInt(10000);
+        return this.rng.nextInt(100);
     }
 }

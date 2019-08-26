@@ -7,7 +7,12 @@ final class ZookeeperData {
 
     private final ZooKeeper zookeeper;
     private final String znode;
-    private final Watcher watcher;
+
+    public void setWatcher(Watcher watcher) {
+        this.watcher = watcher;
+    }
+
+    private Watcher watcher;
 
     ZookeeperData(ZooKeeper zk, String znode, Watcher chainedWatcher) {
         this.zookeeper = zk;

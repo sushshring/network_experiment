@@ -5,6 +5,7 @@ import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.data.Stat;
 
 import java.util.Arrays;
 
@@ -16,6 +17,7 @@ public class DataMonitor extends DataWrangler implements Watcher, AsyncCallback.
 
     DataMonitor(ZookeeperData zookeeperData, DataMonitorListener listener) {
         super(zookeeperData);
+//        zookeeperData.setWatcher(this);
         this.listener = listener;
         this.dead = false;
     }
@@ -39,8 +41,10 @@ public class DataMonitor extends DataWrangler implements Watcher, AsyncCallback.
     @Override
     protected void processResultInternal() {
         byte[] b = null;
+        Stat stat = new Stat();
         try {
-            b = zk.getZookeeper().getData(zk.getZnode(), false, null);
+            b = zk.getZookeeper().getData(zk.getZnode(), true, stat);
+            logger().debug(stat.getVersion());
             logger.debug("Got data from servers");
         } catch (KeeperException | InterruptedException e) {
             logger.error(e);

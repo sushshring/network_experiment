@@ -4,11 +4,14 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.apache.log4j.Logger;
 
-public abstract class DataWrangler implements AsyncCallback.StatCallback, Watcher {
-    protected final ZookeeperData zk;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-    private boolean init = false;
-    public DataWrangler(ZookeeperData zookeeperData) {
+public abstract class DataWrangler implements AsyncCallback.StatCallback, Watcher {
+    final ZookeeperData zk;
+
+    private static AtomicBoolean init = new AtomicBoolean(false);
+
+    DataWrangler(ZookeeperData zookeeperData) {
         this.zk = zookeeperData;
         // Get things started by checking if the node exists. We are going
         // to be completely event driven
@@ -17,6 +20,8 @@ public abstract class DataWrangler implements AsyncCallback.StatCallback, Watche
 
     @Override
     public void process(WatchedEvent event) {
+        logger().debug("Got event");
+        logger().debug(event);
         if (event.getType() == Watcher.Event.EventType.None) {
             // We are are being told that the state of the
             // connection has changed
@@ -38,10 +43,10 @@ public abstract class DataWrangler implements AsyncCallback.StatCallback, Watche
                 zk.getZookeeper().exists(zk.getZnode(), true, this, null);
             }
         }
-        if (!init) {
+        if (!init.get()) {
             try {
-                zk.getZookeeper().create(zk.getZnode(), new byte[0], null, CreateMode.PERSISTENT);
-                init = true;
+                zk.getZookeeper().create(zk.getZnode(), new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+                init.set(true);
             } catch (KeeperException | InterruptedException e) {
                 logger().error(e);
             }
@@ -55,8 +60,11 @@ public abstract class DataWrangler implements AsyncCallback.StatCallback, Watche
 
     @Override
     public void processResult(int rc, String path, Object ctx, Stat stat) {
+        logger().debug("Got result");
+        logger().debug(stat);
         boolean exists;
         KeeperException.Code code = KeeperException.Code.get(rc);
+        logger().debug("Code" + code);
         switch (code) {
             case OK:
                 exists = true;
@@ -69,11 +77,13 @@ public abstract class DataWrangler implements AsyncCallback.StatCallback, Watche
                 handleDeath();
                 return;
             default:
+                logger().debug("Retrying");
                 // Retry errors
                 zk.getZookeeper().exists(zk.getZnode(), true, this, null);
                 return;
         }
         if (exists) {
+            logger().debug("Processing internal");
             processResultInternal();
         }
     }
