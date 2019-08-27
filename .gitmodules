@@ -1,3 +1,4 @@
 [submodule "data"]
 	path = data
-	url = ./data
+	url = https://github.com/sushshring/network-exp-data/
+	branch = master
