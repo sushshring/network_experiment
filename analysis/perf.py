@@ -60,4 +60,5 @@ def get_perf_details():
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, exit_handler)
+    signal.signal(signal.SIGTERM, exit_handler)
     get_perf_details()
