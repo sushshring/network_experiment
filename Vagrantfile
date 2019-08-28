@@ -5,22 +5,22 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.define :target_vm_swarm do |target_vm_swarm|
-    target_vm_swarm.vm.box = "generic/ubuntu1604"
-    target_vm_swarm.vm.network :forwarded_port, guest: 30129, host: 6000, host_ip: "*"
-    target_vm_swarm.vm.network :private_network,
+  config.vm.define :target_vm_k8worker do |target_vm_k8worker|
+    target_vm_k8worker.vm.box = "generic/ubuntu1604"
+    target_vm_k8worker.vm.network :forwarded_port, host: 6000, guest: 30129, host_ip: "*"
+    target_vm_k8worker.vm.network :private_network,
       :libvirt__network_name => "default"
   end
-  config.vm.provision :shell, path: "bootstrap_swarm.sh"
-    # target_vm.vm.network :public_network, :dev => "eno1"
+  config.vm.provision :shell, path: "bootstrap.sh"
+    # target_vm_k8worker.vm.network :public_network, :dev => "eno1"
   config.vm.provider :libvirt do |libvirt|
     libvirt.cpus = 4
     libvirt.memory = 8192
   end
 
-  config.vm.define :adv_vm_swarm do |adv_vm_swarm|
-    adv_vm_swarm.vm.box = "generic/ubuntu1604"
-    adv_vm_swarm.vm.network :private_network,
+  config.vm.define :adv_vm_k8worker do |adv_vm_k8worker|
+    adv_vm_k8worker.vm.box = "generic/ubuntu1604"
+    adv_vm_k8worker.vm.network :private_network,
       :libvirt__network_name => "default"
   end
 end

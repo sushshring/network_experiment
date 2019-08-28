@@ -46,7 +46,7 @@ def Average(lst):
 
 
 def exit_handler(sig, frame):
-    cpu_load_avg = Average(list(map(lambda x: x._cpu_load, perfs)))
+    cpu_load_avg = perfs[-1]._cpu_load
     cpu_usage = Average(list(map(lambda x: x._cpu_usage, perfs)))
     mem_usage = Average(list(map(lambda x: x._memory_usage, perfs)))
     print("cpu load: %f, cpu usage: %f, memory usage %d" % (cpu_load_avg, cpu_usage, mem_usage))
