@@ -10,12 +10,14 @@ import matplotlib.pyplot as plt
 
 def main():
     plt.figure()
-    platforms = [OrchestrationPlatform(name='k8', flooding_level='quad'),
-                 OrchestrationPlatform(name='k8', flooding_level='none', glob='../data/client_times_%s_%s_intf_control_*' % ('k8', 'no')),
-                 OrchestrationPlatform(name='helios', flooding_level='quad'),
-                 OrchestrationPlatform(name='helios', flooding_level='none'),
+    platforms = [OrchestrationPlatform(name='k8_with_separation', flooding_level='quad'),
+                #  OrchestrationPlatform(name='k8', flooding_level='none', glob='../data/client_times_%s_%s_intf_control_*' % ('k8', 'no')),
+                 OrchestrationPlatform(name='k8', flooding_level='quad'),
+                #  OrchestrationPlatform(name='helios', flooding_level='none'),
+                 OrchestrationPlatform(name='swarm_with_separation', flooding_level='quad'),
                  OrchestrationPlatform(name='swarm', flooding_level='quad'),
-                 OrchestrationPlatform(name='swarm', flooding_level='none')]
+                 OrchestrationPlatform(name='helios_with_separation', flooding_level='quad'),
+                 OrchestrationPlatform(name='helios', flooding_level='quad')]
     for platform in platforms:
         execute_platform_analysis(platform)
     # with futures.ProcessPoolExecutor() as pool:
