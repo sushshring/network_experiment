@@ -27,6 +27,7 @@ class ArgParser:
         self.parser.add_argument('--show-rtts', action='store_true', help='Show the rtt plot')
         self.parser.add_argument('--show-histogram', action='store_true', help='Show the rtt histogram')
         self.parser.add_argument('--cr-detection', action='store_true', help='Calculate the CR detection score')
+        self.parser.add_argument('--ks_test', action='store_true', help='Calculate the KS test score')
         self.parser.add_argument('--show-histogram-control', action='store_true',
                                  help='Show the rtt histogram with control sequence')
 
@@ -60,6 +61,10 @@ class ArgParser:
     @property
     def show_control_histogram(self):
         return self.args.show_histogram_control
+
+    @property
+    def ks_test(self):
+        return self.args.ks_test
 
     @property
     def full_histogram(self):

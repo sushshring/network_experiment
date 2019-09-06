@@ -1,5 +1,12 @@
 from typing import List, Tuple
+from enum import Enum
 import numpy as np
+
+class RTTTYPE(Enum):
+    ALL = 1
+    WITH = 2
+    WITHOUT = 3
+
 
 class Rtt:
     rtts_wo_flooder: List[Tuple[float, float]]
@@ -21,8 +28,15 @@ class Rtt:
             (List[Tuple[float, float]], List[Tuple[float, float]], List[Tuple[float, float]]):
         return self._rtts, self._rtts_w_flooder, self._rtts_wo_flooder
 
-    def normalized(self):
-        rtts = self.rtts()[0]
+    def normalized(self, rtt_type: RTTTYPE = RTTTYPE.ALL):
+        if rtt_type == RTTTYPE.ALL:
+            rtts = self.rtts()[0]
+        elif rtt_type == RTTTYPE.WITH:
+            rtts = self.rtts()[1]
+        elif rtt_type == RTTTYPE.WITHOUT:
+            rtts = self.rtts()[2]
+        else:
+            rtts = self.rtts()[0]
         return np.divide(np.subtract(rtts, np.mean(rtts)), np.std(rtts))
 
     @staticmethod

@@ -9,7 +9,7 @@ from sklearn.metrics import mean_squared_error
 from itertools import *
 from outliers_filter_mode import OutliersFilterMode
 from parser.arg_parser import ArgParser
-from parser.rtt import Rtt
+from parser.rtt import Rtt, RTTTYPE
 
 matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
@@ -76,6 +76,8 @@ class Analyzer:
                                         outliers_mode=arg_parser.outlier_removal_type)
         if arg_parser.cr_detection:
             self.get_cr_detection_score()
+        if arg_parser.ks_test:
+            self.ks_test_dual()
         plt.show()
         pass
 
@@ -204,9 +206,18 @@ class Analyzer:
         stats.probplot(rtts, plot=ax1, fit=True, dist=hist)
         ax1.set_title('RTTs QQ Plot')
         return "Kolmogorov Smirnov Two Sample Test: statistic value: %0.2f, pvalue: %0.2f" % (stat, pval)
+    
+    @plotter('Kolmogorov Smirnov Test Dual')
+    def ks_test_dual(self, ax: Axes):
+        rtts_w_flooder, rtts_w_control = self.get_comparison_rtts(RTTTYPE.WITH)
+        rtts_wo_flooder, rtts_wo_control = self.get_comparison_rtts(RTTTYPE.WITHOUT)
+        stat, pval = stats.ks_2samp(rtts_w_flooder, rtts_wo_flooder)
+        print("Kolmogorov Smirnov Two Sample Test: statistic value: %0.2f, pvalue: %0.2f" % (stat, pval))
+        stat, pval = stats.ks_2samp(rtts_w_control, rtts_wo_control)
+        print("Kolmogorov Smirnov Two Sample Test: statistic value: %0.2f, pvalue: %0.2f" % (stat, pval))
 
-    def get_comparison_rtts(self):
-        rtts = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.data.normalized()), lower=1, upper=99)
-        rtts_control = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.control.normalized()), lower=1,
+    def get_comparison_rtts(self, rtt_type):
+        rtts = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.data.normalized(rtt_type)), lower=1, upper=99)
+        rtts_control = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.control.normalized(rtt_type)), lower=1,
                                                      upper=99)
         return rtts, rtts_control
