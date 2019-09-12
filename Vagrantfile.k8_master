@@ -1,0 +1,39 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.define :target_vm_k8master do |target_vm_k8master|
+    target_vm_k8master.vm.box = "generic/ubuntu1604"
+    target_vm_k8master.vm.network :forwarded_port, host: 10000, guest: 6443, host_ip: "*"
+    target_vm_k8master.vm.network :forwarded_port, host: 10001, guest: 10251, host_ip: "*"
+    target_vm_k8master.vm.network :forwarded_port, host: 10002, guest: 10252, host_ip: "*"
+    target_vm_k8master.vm.network :forwarded_port, host: 10003, guest: 10250, host_ip: "*"
+    target_vm_k8master.vm.network :forwarded_port, host: 10004, guest: 10255, host_ip: "*"
+    target_vm_k8master.vm.network :forwarded_port, host: 10005, guest: 2379, host_ip: "*"
+    target_vm_k8master.vm.network :forwarded_port, host: 10006, guest: 2380, host_ip: "*"
+    target_vm_k8master.vm.network :private_network,
+      :libvirt__network_name => "default"
+  end
+  config.vm.provision :shell, path: "bootstrap.sh"
+    # target_vm_k8master.vm.network :public_network, :dev => "eno1"
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.cpus = 4
+    libvirt.memory = 8192
+  end
+
+  config.vm.define :adv_vm_k8master do |adv_vm_k8master|
+    adv_vm_k8master.vm.box = "generic/ubuntu1604"
+    adv_vm_k8master.vm.network :forwarded_port, host: 10007, guest: 6443, host_ip: "*"
+    adv_vm_k8master.vm.network :forwarded_port, host: 10008, guest: 10251, host_ip: "*"
+    adv_vm_k8master.vm.network :forwarded_port, host: 10009, guest: 10252, host_ip: "*"
+    adv_vm_k8master.vm.network :forwarded_port, host: 10010, guest: 10250, host_ip: "*"
+    adv_vm_k8master.vm.network :forwarded_port, host: 10011, guest: 10255, host_ip: "*"
+    adv_vm_k8master.vm.network :forwarded_port, host: 10012, guest: 2379, host_ip: "*"
+    adv_vm_k8master.vm.network :forwarded_port, host: 10013, guest: 2380, host_ip: "*"
+    adv_vm_k8master.vm.network :private_network,
+      :libvirt__network_name => "default"
+  end
+end
