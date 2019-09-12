@@ -24,6 +24,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define :adv_vm_k8worker do |adv_vm_k8worker|
     adv_vm_k8worker.vm.box = "generic/ubuntu1604"
+    adv_vm_k8worker.vm.network :forwarded_port, host: 10000, guest: 10250, host_ip: "*"
+    adv_vm_k8worker.vm.network :forwarded_port, host: 10001, guest: 10255, host_ip: "*"
+    adv_vm_k8worker.vm.network :forwarded_port, host: 10002, guest: 2379, host_ip: "*"
+    adv_vm_k8worker.vm.network :forwarded_port, host: 10003, guest: 2380, host_ip: "*"
     adv_vm_k8worker.vm.network :private_network,
       :libvirt__network_name => "default"
   end
