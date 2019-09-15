@@ -67,6 +67,7 @@ class Analyzer:
         fig.suptitle(arg_parser.title)
         if arg_parser.show_rtts:
             self.plot_rtts(arg_parser.remove_outliers, arg_parser.outlier_removal_type)
+            self.plot_control_rtts(arg_parser.remove_outliers, arg_parser.outlier_removal_type)
         if arg_parser.show_histogram:
             self.plot_histogram(full_histogram=arg_parser.full_histogram, remove_outliers=arg_parser.remove_outliers,
                                 outliers_mode=arg_parser.outlier_removal_type)
@@ -75,7 +76,7 @@ class Analyzer:
                                         remove_outliers=arg_parser.remove_outliers,
                                         outliers_mode=arg_parser.outlier_removal_type)
         if arg_parser.cr_detection:
-            self.get_cr_detection_score()
+            print(self.get_cr_detection_score())
         if arg_parser.ks_test:
             self.ks_test_dual()
         plt.show()
@@ -90,7 +91,7 @@ class Analyzer:
         :type full_histogram: bool Print the full histogram instead of two separate histograms based on whether the
         flooder was on or off
         """
-        rtts, rtts_w_flooder, rtts_wo_flooder = self.data.rtts()
+        rtts, rtts_w_flooder, rtts_wo_flooder = self.data.normalized(rtt_type=RTTTYPE.ALL), self.data.normalized(rtt_type=RTTTYPE.WITH), self.data.normalized(rtt_type=RTTTYPE.WITHOUT)
         if remove_outliers:
             if outliers_mode == OutliersFilterMode.PERCENTAGE:
                 rtts = Analyzer._remove_outliers_pct(rtts)
@@ -111,6 +112,8 @@ class Analyzer:
             ax.hist(rtts_wo_flooder, color='Blue', bins=1000, alpha=0.5, label='Round trip time without flooder')
         ax.legend()
         ax.set_title('RTT histogram')
+        ax.set_ylabel('Frequency')
+        ax.set_xlabel('Request RTT (ms)')
 
     @plotter('RTT plot')
     def plot_rtts(self, remove_outliers: bool, outliers_mode: OutliersFilterMode, ax: Axes):
@@ -130,6 +133,29 @@ class Analyzer:
             ax.plot(*zip(*rtts_wo_flooder), color='g', label='Rtts without flooder', alpha=0.5)
         ax.legend()
         ax.set_title('RTT plot')
+        ax.set_ylabel('Round-trip Time (ms)')
+        ax.set_xlabel('Request number')
+    
+    @plotter('RTT control plot')
+    def plot_control_rtts(self, remove_outliers: bool, outliers_mode: OutliersFilterMode, ax: Axes):
+        if remove_outliers:
+            data, _, _ = self.control.rtts()
+            if outliers_mode == OutliersFilterMode.PERCENTAGE:
+                rtts = Analyzer._remove_outliers_pct(data)
+            elif outliers_mode == OutliersFilterMode.FILTER:
+                rtts = Analyzer._filter_data(data)
+            else:
+                rtts = Analyzer._remove_outliers_mode(data)
+            ax.plot(rtts, color='r', label=str.format('Rtts with outliers removed by {}', outliers_mode.name))
+        else:
+            rtts, rtts_w_flooder, rtts_wo_flooder = self.control.rtts_with_start_times()
+            ax.plot(*zip(*rtts), color='r', label='Rtts', alpha=0.5)
+            ax.plot(*zip(*rtts_w_flooder), color='b', label='Rtts with flooder', alpha=0.5)
+            ax.plot(*zip(*rtts_wo_flooder), color='g', label='Rtts without flooder', alpha=0.5)
+        ax.legend()
+        ax.set_title('RTT plot')
+        ax.set_ylabel('Round-trip Time (ms)')
+        ax.set_xlabel('Request number')
 
     @plotter('Histogram with control')
     def plot_histogram_control(self, full_histogram: bool, remove_outliers: bool, outliers_mode: OutliersFilterMode,
@@ -140,7 +166,9 @@ class Analyzer:
                :type full_histogram: bool Print the full histogram instead of two separate histograms based on whether the
                flooder was on or off
                """
-        rtts, rtts_w_flooder, rtts_wo_flooder = self.control.rtts()
+        ax.set_ylabel('Frequency')
+        ax.set_xlabel('Request RTT (ms)')
+        rtts, rtts_w_flooder, rtts_wo_flooder = self.control.normalized(rtt_type=RTTTYPE.ALL), self.control.normalized(rtt_type=RTTTYPE.WITH), self.control.normalized(rtt_type=RTTTYPE.WITHOUT)
         if remove_outliers:
             if outliers_mode == OutliersFilterMode.PERCENTAGE:
                 rtts = Analyzer._remove_outliers_pct(rtts)
@@ -216,7 +244,7 @@ class Analyzer:
         stat, pval = stats.ks_2samp(rtts_w_control, rtts_wo_control)
         print("Kolmogorov Smirnov Two Sample Test: statistic value: %0.2f, pvalue: %0.2f" % (stat, pval))
 
-    def get_comparison_rtts(self, rtt_type):
+    def get_comparison_rtts(self, rtt_type = RTTTYPE.ALL):
         rtts = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.data.normalized(rtt_type)), lower=1, upper=99)
         rtts_control = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.control.normalized(rtt_type)), lower=1,
                                                      upper=99)

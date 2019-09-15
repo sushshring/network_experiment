@@ -18,6 +18,9 @@ class OrchestrationPlatform:
         else:
             self.glob = glob
 
+    def __repr__(self):
+        return "name: {}, flooding_level: {}, glob: {}".format(self.name, self.flooding_level, self.glob)
+
     def get_files(self) -> Iterable[TextIO]:
         files = glob(self.glob)
         for file in files:
