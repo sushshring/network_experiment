@@ -1,2 +1,5 @@
 **/*.a
 **/*.o
+data/
+zookeeper-monkey/
+.git/
