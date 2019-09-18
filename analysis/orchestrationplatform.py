@@ -31,12 +31,12 @@ class OrchestrationPlatform:
         pass
 
     def get_adv_score(self):
-        scores = []
+        scores = {}
         for file in self.get_files():
             parser = Parser(file)
             analyzer = Analyzer(parser.rtts, parser.rtts_control)
             # analyzer.ks_test()
-            scores.append(analyzer.get_cr_detection_score())
+            scores[file.name] = analyzer.get_cr_detection_score()
         return scores
 
     @plotter('Platform adversary score distribution')
@@ -49,7 +49,7 @@ class OrchestrationPlatform:
         pass
 
     @property
-    def adv_score(self):
+    def adv_score(self) -> dict:
         if self._adv_score is None:
             self._adv_score = self.get_adv_score()
         return self._adv_score
