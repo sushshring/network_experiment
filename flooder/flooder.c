@@ -100,7 +100,7 @@ int flooder_run(flooder_socks *socks)
       write(socks->client_sock, client_control, 6);
       notified_control = 1;
     }
-    while (currenttime < clocktime + 1)
+    while (currenttime < clocktime + 5)
     {
       if (socks->with_control && notified_control)
       {

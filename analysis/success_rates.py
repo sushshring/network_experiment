@@ -11,18 +11,33 @@ def main(with_cr_globber: str, without_cr_globber: str, ax: Axes):
     with_cr_orchestration_platform = OrchestrationPlatform("K8 with Co-residency and separation", "quad", with_cr_globber)
     without_cr_orchestration_platform = OrchestrationPlatform("K8 without Co-residency and separation", "quad", without_cr_globber)
 
-    ax.hist([x[1] for x in with_cr_orchestration_platform.adv_score.values()], alpha=0.5, label='with co-residency', bins=1000)
-    ax.hist([x[1] for x in without_cr_orchestration_platform.adv_score.values()], alpha=0.5, label='without co-residency', bins=1000)
+    mse_hist_withcr = [x[1] for x in with_cr_orchestration_platform.adv_score.values()]
+    mse_hist_withoutcr = [x[1] for x in without_cr_orchestration_platform.adv_score.values()]
+    ax.hist(mse_hist_withcr, alpha=0.5, label='with co-residency', bins=10)
+    ax.hist(mse_hist_withoutcr, alpha=0.5, label='without co-residency', bins=10)
     ax.legend()
     print('\n'.join(["{}: {}".format(k, v[1]) for k, v in with_cr_orchestration_platform.adv_score.items()]))
     print('\n'.join(["{}: {}".format(k, v[1]) for k, v in without_cr_orchestration_platform.adv_score.items()]))
     draw_timeline(with_cr_orchestration_platform.adv_score)
-    tp = len([x for x in with_cr_orchestration_platform.adv_score.values() if x[2] > 5.37]) / len(with_cr_orchestration_platform.adv_score.values())
-    tn = len([x for x in without_cr_orchestration_platform.adv_score.values() if x[2] <= 5.37]) / len(without_cr_orchestration_platform.adv_score.values())
+    minimal = min(mse_hist_withcr + mse_hist_withoutcr)
+    maximal = max(mse_hist_withcr + mse_hist_withoutcr)
+    tps = []
+    fps = []
+    for i in range(int(minimal), int(maximal)):
+        tps.append(len([x for x in mse_hist_withcr if x > i]) / len(mse_hist_withcr))
+        fps.append(1 - (len([x for x in mse_hist_withoutcr if x <= i]) / len(mse_hist_withoutcr)))
 
-    print("True positive: {:.2f}, false positive: {:.2f}, true negative: {:.2f}, false negative: {:.2f}".format(tp, 1 - tp, tn,1 - tn))
+    plot_roc(tps, fps)
+    tp = len([x for x in mse_hist_withcr if x > 724]) / len(mse_hist_withcr)
+    tn = len([x for x in mse_hist_withoutcr if x <= 724]) / len(mse_hist_withoutcr)
+
+    print("True positive: {:.2f}, false positive: {:.2f}, true negative: {:.2f}, false negative: {:.2f}".format(tp, 1 - tn, tn,1 - tp))
     plt.show()
 
+@plotter('ROC Curve')
+def plot_roc(tps, fps, ax):
+    ax.plot(fps, tps)
+    pass
 
 @plotter('Adv scores timeline')
 def draw_timeline(file_score_dict: dict, ax: Axes):
