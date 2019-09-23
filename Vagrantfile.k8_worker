@@ -12,6 +12,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     target_vm_k8worker.vm.network :forwarded_port, host: 10255, guest: 10255, host_ip: "*"
     target_vm_k8worker.vm.network :forwarded_port, host: 2379, guest: 2379, host_ip: "*"
     target_vm_k8worker.vm.network :forwarded_port, host: 2380, guest: 2380, host_ip: "*"
+    target_vm_k8worker.vm.network :forwarded_port, host: 6783, guest: 6783, host_ip: "*"
+    target_vm_k8worker.vm.network :forwarded_port, host: 6784, guest: 6784, host_ip: "*"
     target_vm_k8worker.vm.network :private_network,
       :libvirt__network_name => "default"
   end

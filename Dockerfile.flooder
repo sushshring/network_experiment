@@ -5,4 +5,3 @@ WORKDIR /network-exp/flooder
 RUN make
 RUN chmod +x flooder-script.sh
 ENTRYPOINT [ "./flooder-script.sh" ]
-# ENTRYPOINT ["./flooder", "-v","-t", "2", "192.168.2.1", "6000", "192.168.2.1", "6001"]
