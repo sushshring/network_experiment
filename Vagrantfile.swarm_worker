@@ -21,4 +21,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     libvirt.cpus = 4
     libvirt.memory = 8192
   end
+
+  config.vm.define :adv_vm_swarmworker do |adv_vm_swarmworker|
+    adv_vm_swarmworker.vm.box = "generic/ubuntu1604"
+  end
 end
