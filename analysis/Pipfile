@@ -5,13 +5,12 @@ verify_ssl = true
 
 [dev-packages]
 pep8 = "*"
+autopep8 = "*"
 
 [packages]
 numpy = "*"
 scipy = "*"
 matplotlib = "*"
-pylint = "*"
-yapf = "*"
 pyqt5 = "*"
 sklearn = "*"
 

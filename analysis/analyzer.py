@@ -12,8 +12,24 @@ from parser.arg_parser import ArgParser
 from parser.rtt import Rtt, RTTTYPE
 
 matplotlib.use('Qt5Agg')
+matplotlib.rc('xtick', labelsize=16)
+matplotlib.rc('ytick', labelsize=16)
+matplotlib.rcParams.update({'font.size': 30})
+# matplotlib.use('pgf')
 import matplotlib.pyplot as plt
+# plt.rcParams.update({
+#     # "pgf.texsystem": "pdflatex",
+#     "font.family": "serif",  # use serif/main font for text elements
+#     "text.usetex": True,     # use inline math for ticks
+#     "pgf.rcfonts": False,    # don't setup fonts from rc parameters
+#     "pgf.preamble": [
+#          "\\usepackage{unicode-math}",   # unicode math setup
+#          r"\setmainfont{DejaVu Serif}",  # serif font via preamble
+#          ]
+# })
+import matplotlib.ticker as mtick
 
+# np.set_printoptions(formatter={'float': lambda x: format(x, '6.3E')})
 
 class plotter:
     def __init__(self, label: str):
@@ -66,8 +82,10 @@ class Analyzer:
         fig = plt.figure()
         fig.suptitle(arg_parser.title)
         if arg_parser.show_rtts:
-            self.plot_rtts(arg_parser.remove_outliers, arg_parser.outlier_removal_type)
-            self.plot_control_rtts(arg_parser.remove_outliers, arg_parser.outlier_removal_type)
+            self.plot_rtts(arg_parser.remove_outliers,
+                           arg_parser.outlier_removal_type)
+            self.plot_control_rtts(
+                arg_parser.remove_outliers, arg_parser.outlier_removal_type)
         if arg_parser.show_histogram:
             self.plot_histogram(full_histogram=arg_parser.full_histogram, remove_outliers=arg_parser.remove_outliers,
                                 outliers_mode=arg_parser.outlier_removal_type)
@@ -80,6 +98,7 @@ class Analyzer:
         if arg_parser.ks_test:
             self.ks_test_dual()
         plt.show()
+        # plt.savefig('../k8_thesis/figures/{0}_control.pgf'.format(arg_parser.title))
         pass
 
     # Plotting methods
@@ -91,29 +110,36 @@ class Analyzer:
         :type full_histogram: bool Print the full histogram instead of two separate histograms based on whether the
         flooder was on or off
         """
-        rtts, rtts_w_flooder, rtts_wo_flooder = self.data.normalized(rtt_type=RTTTYPE.ALL), self.data.normalized(rtt_type=RTTTYPE.WITH), self.data.normalized(rtt_type=RTTTYPE.WITHOUT)
+        rtts, rtts_w_flooder, rtts_wo_flooder = self.data.normalized(rtt_type=RTTTYPE.ALL), self.data.normalized(
+            rtt_type=RTTTYPE.WITH), self.data.normalized(rtt_type=RTTTYPE.WITHOUT)
         if remove_outliers:
             if outliers_mode == OutliersFilterMode.PERCENTAGE:
                 rtts = Analyzer._remove_outliers_pct(rtts)
                 rtts_w_flooder = Analyzer._remove_outliers_pct(rtts_w_flooder)
-                rtts_wo_flooder = Analyzer._remove_outliers_pct(rtts_wo_flooder)
+                rtts_wo_flooder = Analyzer._remove_outliers_pct(
+                    rtts_wo_flooder)
             elif outliers_mode == OutliersFilterMode.FILTER:
                 rtts = Analyzer._filter_data(rtts)
                 rtts_w_flooder = Analyzer._filter_data(rtts_w_flooder)
                 rtts_wo_flooder = Analyzer._filter_data(rtts_wo_flooder)
             else:
                 rtts = Analyzer._remove_outliers_mode(rtts)
-                rtts_wo_flooder = Analyzer._remove_outliers_mode(rtts_w_flooder)
-                rtts_wo_flooder = Analyzer._remove_outliers_mode(rtts_wo_flooder)
+                rtts_wo_flooder = Analyzer._remove_outliers_mode(
+                    rtts_w_flooder)
+                rtts_wo_flooder = Analyzer._remove_outliers_mode(
+                    rtts_wo_flooder)
         if full_histogram:
-            ax.hist(rtts, bins=1000, alpha=0.5, label='Round trip time frequency')
+            ax.hist(rtts, bins=1000, alpha=0.5,
+                    label='Round trip time frequency')
         else:
-            ax.hist(rtts_w_flooder, color='Orange', bins=1000, alpha=0.5, label='Round trip time with flooder')
-            ax.hist(rtts_wo_flooder, color='Blue', bins=1000, alpha=0.5, label='Round trip time without flooder')
+            ax.hist(rtts_w_flooder, color='Orange', bins=1000,
+                    alpha=0.5, label='Round trip time with flooder')
+            ax.hist(rtts_wo_flooder, color='Blue', bins=1000,
+                    alpha=0.5, label='Round trip time without flooder')
         ax.legend()
-        ax.set_title('RTT histogram')
+        # ax.set_title('RTT histogram')
         ax.set_ylabel('Frequency')
-        ax.set_xlabel('Request RTT (ms)')
+        ax.set_xlabel('Normalized Request RTT')
 
     @plotter('RTT plot')
     def plot_rtts(self, remove_outliers: bool, outliers_mode: OutliersFilterMode, ax: Axes):
@@ -125,17 +151,23 @@ class Analyzer:
                 rtts = Analyzer._filter_data(data)
             else:
                 rtts = Analyzer._remove_outliers_mode(data)
-            ax.plot(rtts, color='r', label=str.format('Rtts with outliers removed by {}', outliers_mode.name))
+            rtts = rtts/1000000
+            ax.plot(rtts, color='black')
         else:
             rtts, rtts_w_flooder, rtts_wo_flooder = self.data.rtts_with_start_times()
             ax.plot(*zip(*rtts), color='r', label='Rtts', alpha=0.5)
-            ax.plot(*zip(*rtts_w_flooder), color='b', label='Rtts with flooder', alpha=0.5)
-            ax.plot(*zip(*rtts_wo_flooder), color='g', label='Rtts without flooder', alpha=0.5)
-        ax.legend()
-        ax.set_title('RTT plot')
-        ax.set_ylabel('Round-trip Time (ms)')
-        ax.set_xlabel('Request number')
-    
+            ax.plot(*zip(*rtts_w_flooder), color='b',
+                    label='Rtts with flooder', alpha=0.5)
+            ax.plot(*zip(*rtts_wo_flooder), color='g',
+                    label='Rtts without flooder', alpha=0.5)
+        # ax.legend()
+        # ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.0e'))
+        ax.ticklabel_format(axis='y', style='sci', useMathText=True)
+        # ax.set_title(
+        #     'Round Trip Time measured by the client for one minute of server activity with flooder running', fontsize=18)
+        ax.set_ylabel('Round-trip Time (ms)', fontsize=18)
+        ax.set_xlabel('Request number', fontsize=18)
+
     @plotter('RTT control plot')
     def plot_control_rtts(self, remove_outliers: bool, outliers_mode: OutliersFilterMode, ax: Axes):
         if remove_outliers:
@@ -146,16 +178,23 @@ class Analyzer:
                 rtts = Analyzer._filter_data(data)
             else:
                 rtts = Analyzer._remove_outliers_mode(data)
-            ax.plot(rtts, color='r', label=str.format('Rtts with outliers removed by {}', outliers_mode.name))
+            rtts = rtts/1000000
+            ax.plot(rtts, color='black')
         else:
             rtts, rtts_w_flooder, rtts_wo_flooder = self.control.rtts_with_start_times()
             ax.plot(*zip(*rtts), color='r', label='Rtts', alpha=0.5)
-            ax.plot(*zip(*rtts_w_flooder), color='b', label='Rtts with flooder', alpha=0.5)
-            ax.plot(*zip(*rtts_wo_flooder), color='g', label='Rtts without flooder', alpha=0.5)
-        ax.legend()
-        ax.set_title('RTT plot')
-        ax.set_ylabel('Round-trip Time (ms)')
-        ax.set_xlabel('Request number')
+            ax.plot(*zip(*rtts_w_flooder), color='b',
+                    label='Rtts with flooder', alpha=0.5)
+            ax.plot(*zip(*rtts_wo_flooder), color='g',
+                    label='Rtts without flooder', alpha=0.5)
+        # ax.legend()
+        # ax.set_title(
+        #     'Round Trip Time measured by the client for one minute of server activity without flooder running')
+        ax.set_ylabel('Round-trip Time (ms)', fontsize=18)
+        ax.set_xlabel('Request number', fontsize=18)
+        # ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.0e'))
+        ax.ticklabel_format(axis='y', style='sci', useMathText=True)
+
 
     @plotter('Histogram with control')
     def plot_histogram_control(self, full_histogram: bool, remove_outliers: bool, outliers_mode: OutliersFilterMode,
@@ -167,37 +206,46 @@ class Analyzer:
                flooder was on or off
                """
         ax.set_ylabel('Frequency')
-        ax.set_xlabel('Request RTT (ms)')
-        rtts, rtts_w_flooder, rtts_wo_flooder = self.control.normalized(rtt_type=RTTTYPE.ALL), self.control.normalized(rtt_type=RTTTYPE.WITH), self.control.normalized(rtt_type=RTTTYPE.WITHOUT)
+        ax.set_xlabel('Normalized Request RTT')
+        rtts, rtts_w_flooder, rtts_wo_flooder = self.control.normalized(rtt_type=RTTTYPE.ALL), self.control.normalized(
+            rtt_type=RTTTYPE.WITH), self.control.normalized(rtt_type=RTTTYPE.WITHOUT)
         if remove_outliers:
             if outliers_mode == OutliersFilterMode.PERCENTAGE:
                 rtts = Analyzer._remove_outliers_pct(rtts)
                 rtts_w_flooder = Analyzer._remove_outliers_pct(rtts_w_flooder)
-                rtts_wo_flooder = Analyzer._remove_outliers_pct(rtts_wo_flooder)
+                rtts_wo_flooder = Analyzer._remove_outliers_pct(
+                    rtts_wo_flooder)
             elif outliers_mode == OutliersFilterMode.FILTER:
                 rtts = Analyzer._filter_data(rtts)
                 rtts_w_flooder = Analyzer._filter_data(rtts_w_flooder)
                 rtts_wo_flooder = Analyzer._filter_data(rtts_wo_flooder)
             else:
                 rtts = Analyzer._remove_outliers_mode(rtts)
-                rtts_wo_flooder = Analyzer._remove_outliers_mode(rtts_w_flooder)
-                rtts_wo_flooder = Analyzer._remove_outliers_mode(rtts_wo_flooder)
+                rtts_wo_flooder = Analyzer._remove_outliers_mode(
+                    rtts_w_flooder)
+                rtts_wo_flooder = Analyzer._remove_outliers_mode(
+                    rtts_wo_flooder)
         if full_histogram:
-            ax.hist(rtts, bins=1000, alpha=0.5, label='Round trip time frequency')
+            ax.hist(rtts, bins=1000, alpha=0.5,
+                    label='Round trip time frequency')
         else:
-            ax.hist(rtts_w_flooder, color='Orange', bins=1000, alpha=0.5, label='Round trip time with flooder')
-            ax.hist(rtts_wo_flooder, color='Blue', bins=1000, alpha=0.5, label='Round trip time without flooder')
+            ax.hist(rtts_w_flooder, color='Orange', bins=1000,
+                    alpha=0.5, label='Round trip time with flooder')
+            ax.hist(rtts_wo_flooder, color='Blue', bins=1000,
+                    alpha=0.5, label='Round trip time without flooder')
         ax.legend()
-        ax.set_title('RTT histogram with control')
+        # ax.set_title('RTT histogram with control', fontsize=18)
 
     def get_cr_detection_score(self):
         mse_scale = 69.45
         rtts, rtts_control = self.get_comparison_rtts()
         rtts = sorted(rtts)
         rtts_control = sorted(rtts_control)
-        rtts, rtts_control = zip(*zip_longest(rtts, rtts_control, fillvalue=np.mean(rtts)))
+        rtts, rtts_control = zip(
+            *zip_longest(rtts, rtts_control, fillvalue=np.mean(rtts)))
         # Generate histogram
-        (hist, _), (hist_control, _) = np.histogram(rtts, bins=1000), np.histogram(rtts_control, bins=1000)
+        (hist, _), (hist_control, _) = np.histogram(
+            rtts, bins=1000), np.histogram(rtts_control, bins=1000)
         # Remove zeros
         hist = [0.0000000001 if x == 0 else x for x in hist]
         hist_control = [0.0000000001 if x == 0 else x for x in hist_control]
@@ -217,35 +265,43 @@ class Analyzer:
     def mann_whitney_test(self):
         rtts = Analyzer._filter_data(self.data.normalized())
         rtts_control = Analyzer._filter_data(self.control.normalized())
-        stat, pval = stats.mannwhitneyu(rtts, rtts_control, alternative='greater')
+        stat, pval = stats.mannwhitneyu(
+            rtts, rtts_control, alternative='greater')
         return "Mann Whitney Test: statistic value: %0.2f, pvalue: %0.2f" % (stat, pval)
 
     @plotter('Kolmogorov Smirnov Test')
     def ks_test(self, ax: Axes):
         rtts, rtts_control = self.get_comparison_rtts()
         stat, pval = stats.ks_2samp(rtts, rtts_control)
-        ax.hist(rtts, color='Orange', bins=1000, alpha=0.5, label='Normalized RTTs with flooder')
-        ax.hist(rtts_control, color='Blue', bins=1000, alpha=0.5, label='Normalized RTTs under control')
+        ax.hist(rtts, color='Orange', bins=1000, alpha=0.5,
+                label='Normalized RTTs with flooder')
+        ax.hist(rtts_control, color='Blue', bins=1000,
+                alpha=0.5, label='Normalized RTTs under control')
         ax.legend()
         ax.set_title('RTT histogram normalized by mean and stdev')
 
         hist = stats.rv_histogram(np.histogram(rtts_control, bins=1000))
-        ax1 = plotter.get_new_subplot('QQ Plot for RTTs with flooder against control')
+        ax1 = plotter.get_new_subplot(
+            'QQ Plot for RTTs with flooder against control')
         stats.probplot(rtts, plot=ax1, fit=True, dist=hist)
         ax1.set_title('RTTs QQ Plot')
         return "Kolmogorov Smirnov Two Sample Test: statistic value: %0.2f, pvalue: %0.2f" % (stat, pval)
-    
+
     @plotter('Kolmogorov Smirnov Test Dual')
     def ks_test_dual(self, ax: Axes):
         rtts_w_flooder, rtts_w_control = self.get_comparison_rtts(RTTTYPE.WITH)
-        rtts_wo_flooder, rtts_wo_control = self.get_comparison_rtts(RTTTYPE.WITHOUT)
+        rtts_wo_flooder, rtts_wo_control = self.get_comparison_rtts(
+            RTTTYPE.WITHOUT)
         stat, pval = stats.ks_2samp(rtts_w_flooder, rtts_wo_flooder)
-        print("Kolmogorov Smirnov Two Sample Test: statistic value: %0.2f, pvalue: %0.2f" % (stat, pval))
+        print("Kolmogorov Smirnov Two Sample Test: statistic value: %0.2f, pvalue: %0.2f" % (
+            stat, pval))
         stat, pval = stats.ks_2samp(rtts_w_control, rtts_wo_control)
-        print("Kolmogorov Smirnov Two Sample Test: statistic value: %0.2f, pvalue: %0.2f" % (stat, pval))
+        print("Kolmogorov Smirnov Two Sample Test: statistic value: %0.2f, pvalue: %0.2f" % (
+            stat, pval))
 
-    def get_comparison_rtts(self, rtt_type = RTTTYPE.ALL):
-        rtts = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.data.normalized(rtt_type)), lower=1, upper=99)
+    def get_comparison_rtts(self, rtt_type=RTTTYPE.ALL):
+        rtts = Analyzer._remove_outliers_pct(Analyzer._filter_data(
+            self.data.normalized(rtt_type)), lower=1, upper=99)
         rtts_control = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.control.normalized(rtt_type)), lower=1,
                                                      upper=99)
         return rtts, rtts_control

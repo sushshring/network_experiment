@@ -41,7 +41,7 @@ class OrchestrationPlatform:
 
     @plotter('Platform adversary score distribution')
     def plot_adv_score(self, ax: Axes):
-        scores = zip(*self.adv_score)
+        scores = zip(*self.adv_score.values())
         for score in scores:
             ax.hist(score, alpha=0.5, label=self.name)
         ax.set_title('Adversarial distribution for %s with %s flooding' % (self.name, self.flooding_level))

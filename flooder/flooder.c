@@ -6,7 +6,7 @@
 #include "flooder.h"
 struct timespec tstart = {0, 0};
 
-flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, int scale, int with_control)
+flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, double scale, int with_control)
 {
   //
   //
