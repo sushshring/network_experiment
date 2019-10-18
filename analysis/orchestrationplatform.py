@@ -1,4 +1,5 @@
 import os
+import multiprocessing
 from glob import glob
 from typing import Iterable, TextIO
 
@@ -32,12 +33,22 @@ class OrchestrationPlatform:
 
     def get_adv_score(self):
         scores = {}
-        for file in self.get_files():
-            parser = Parser(file)
-            analyzer = Analyzer(parser.rtts, parser.rtts_control)
-            # analyzer.ks_test()
-            scores[file.name] = analyzer.get_cr_detection_score()
+        if os.getenv('MP_ENABLE', False):
+            p = multiprocessing.Pool(processes = multiprocessing.cpu_count()-1)
+            scors = p.map(self.parse_file, glob(self.glob))
+            for i, file in enumerate(self.get_files()):
+                scores[file.name] = scors[i]
+        else:
+            for file in self.get_files():
+                scores[file.name] = self.parse_file(file.name)
         return scores
+
+    def parse_file(self, filename):
+        file = open(filename, 'r')
+        parser = Parser(file)
+        analyzer = Analyzer(parser.rtts, parser.rtts_control)
+        # analyzer.ks_test()
+        return analyzer.get_cr_detection_score()
 
     @plotter('Platform adversary score distribution')
     def plot_adv_score(self, ax: Axes):

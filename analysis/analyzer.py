@@ -38,6 +38,7 @@ class plotter:
     def __call__(self, func):
         def plot(*args, **kwargs):
             ax = plotter.get_new_subplot(self.label)
+            ax.yaxis.grid(True)
             return func(*args, **kwargs, ax=ax)
 
         return plot
@@ -252,10 +253,19 @@ class Analyzer:
 
         # Get all scores
         mse_score = mean_squared_error(rtts_control, rtts)
-        mse_score_hist = mean_squared_error(hist_control, hist)
+        # mse_score_hist = mean_squared_error(hist_control, hist)
         wass_metric = stats.wasserstein_distance(hist, hist_control)
         energy_distance = stats.energy_distance(hist, hist_control)
         kl_dist = stats.entropy(hist, hist_control)
+
+        rtts_watermarked, rtts_watermarked_control = self.get_comparison_rtts(rtt_type=RTTTYPE.WITH)
+        rtts_idling, rtts_idling_control = self.get_comparison_rtts(rtt_type=RTTTYPE.WITHOUT)
+        hist_watermarked, _ = np.histogram(rtts_watermarked, bins=1000)
+        hist_idling, _ = np.histogram(rtts_idling, bins=1000)
+        hist_watermarked_control, _ = np.histogram(rtts_watermarked_control, bins=1000)
+        hist_idling_control, _ = np.histogram(rtts_idling_control, bins=1000)
+        mse_score_hist = mean_squared_error(hist_watermarked, hist_idling) - mean_squared_error(hist_watermarked_control, hist_idling_control)
+
 
         # ax = plotter.get_new_subplot('Probabily densities') ax.plot(hist, 'r+') ax.plot(hist_control, 'b+') print(
         # 'mse score: %f, mse_score_hist: %f, wasserstein distance: %f, energy distance: %f, kl_distance: %f' %(

@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 pep8 = "*"
 autopep8 = "*"
+rope = "*"
 
 [packages]
 numpy = "*"
