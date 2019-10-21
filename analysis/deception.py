@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 base_folder = '../data/'
-orchestrator = 'flooder_multiplier_sensitivity_local'
+orchestrator = 'flooder_multiplier_sensitivity'
 
 @plotter('Adversarial deception')
 def main(ax: Axes):
@@ -63,8 +63,10 @@ def main(ax: Axes):
 
     for k in data_dict:
         mse_values = [ i[1] for i in data_dict[k].get_adv_score().values()]
-        result_dict[k] = len([i for i in mse_values if i < 150]) / len(mse_values)
-        ax.scatter([k + np.random.random() * 9 for i in range(len(mse_values))], mse_values, label=data_dict[k].name, marker='o')
+        result_dict[k] = None if not len(mse_values) > 0 else len([i for i in mse_values if i > 120]) / len(mse_values)
+        ax.scatter([k for i in range(len(mse_values))], mse_values, label=data_dict[k].name, marker='o')
+        mean = np.median(mse_values)
+        ax.plot([k, k+10], [mean, mean])
         pass
     # x = [f[0] for f in arrs]
     # y = [np.mean([n[1] for n in p[1].get_adv_score().values()]) for p in arrs]

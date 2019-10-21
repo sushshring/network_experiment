@@ -240,8 +240,8 @@ class Analyzer:
     def get_cr_detection_score(self):
         mse_scale = 69.45
         rtts, rtts_control = self.get_comparison_rtts()
-        rtts = sorted(rtts)
-        rtts_control = sorted(rtts_control)
+        # rtts = sorted(rtts)
+        # rtts_control = sorted(rtts_control)
         rtts, rtts_control = zip(
             *zip_longest(rtts, rtts_control, fillvalue=np.mean(rtts)))
         # Generate histogram
