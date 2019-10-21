@@ -100,25 +100,25 @@ int flooder_run(flooder_socks *socks)
       write(socks->client_sock, client_control, 6);
       notified_control = 1;
     }
-    while (currenttime < clocktime + 5)
+    if (socks->with_control && notified_control)
     {
-      if (socks->with_control && notified_control)
-      {
-        clock_gettime(CLOCK_MONOTONIC, &clock);
-        currenttime = clock.tv_sec;
-        continue;
-      }
-      if (write(socks->udp_sock, rbuf, data_size) == -1)
-      {
-        logMessage(LOG_ERROR_LEVEL, "Failed to write to UDP socket. Reason: %s\n", strerror(errno));
-      }
-      else
-      {
-        sent_bytes += data_size;
-      }
-      send_bytes += data_size;
-      clock_gettime(CLOCK_MONOTONIC, &clock);
-      currenttime = clock.tv_sec;
+        sleep(5);
+    }
+    else {
+        while (currenttime < clocktime + 5)
+        {
+          if (write(socks->udp_sock, rbuf, data_size) == -1)
+          {
+            logMessage(LOG_ERROR_LEVEL, "Failed to write to UDP socket. Reason: %s\n", strerror(errno));
+          }
+          else
+          {
+            sent_bytes += data_size;
+          }
+          send_bytes += data_size;
+          clock_gettime(CLOCK_MONOTONIC, &clock);
+          currenttime = clock.tv_sec;
+        }
     }
     logMessage(LOG_INFO_LEVEL, "Notifying end to client\n");
     write(socks->client_sock, client_end, 6);
