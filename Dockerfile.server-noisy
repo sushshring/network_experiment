@@ -9,5 +9,5 @@ EXPOSE 6000
 RUN chmod +x ./server-noise-runner.py
 RUN useradd -ms /bin/bash server-user
 USER server-user
-ENTRYPOINT [ "./server-noise-runner.py" ]
+ENTRYPOINT [ "./server-noise-runner.py", "$WORKLOAD"]
 # ENTRYPOINT ["./server", "-v", "6000"]
