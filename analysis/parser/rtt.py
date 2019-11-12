@@ -39,6 +39,17 @@ class Rtt:
             rtts = self.rtts()[0]
         return np.divide(np.subtract(rtts, np.mean(rtts)), np.std(rtts))
 
+    def non_normalized(self, rtt_type: RTTTYPE = RTTTYPE.ALL):
+        if rtt_type == RTTTYPE.ALL:
+            rtts = self.rtts()[0]
+        elif rtt_type == RTTTYPE.WITH:
+            rtts = self.rtts()[1]
+        elif rtt_type == RTTTYPE.WITHOUT:
+            rtts = self.rtts()[2]
+        else:
+            rtts = self.rtts()[0]
+        return rtts
+
     @staticmethod
     def __get_without_start_time(elements: List[Tuple[float, float]]) -> List[float]:
         if len(elements) == 0:

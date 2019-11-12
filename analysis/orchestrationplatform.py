@@ -7,13 +7,16 @@ from matplotlib.axes import Axes
 
 from analyzer import Analyzer, plotter
 from parser.data_parser import Parser
+import numpy as np
 
 
 class OrchestrationPlatform:
-    def __init__(self, name, flooding_level, glob=None):
+    def __init__(self, name, flooding_level, glob=None, sample=False):
         self._adv_score = None
+        self._control_mean_dist = None
         self.name = name
         self.flooding_level = flooding_level
+        self.sample = sample
         if glob is None:
             self.glob = '../data/%s/client_times_%s_%s_intf_control_*' % (self.name, self.name, self.flooding_level)
         else:
@@ -25,6 +28,8 @@ class OrchestrationPlatform:
     def get_files(self) -> Iterable[TextIO]:
         files = glob(self.glob)
         for file in files:
+            if self.sample and np.random.randint(0, 10) >= 5:
+                continue
             if not is_non_zero_file(file):
                 continue
             with open(file) as fh:
@@ -64,6 +69,21 @@ class OrchestrationPlatform:
         if self._adv_score is None:
             self._adv_score = self.get_adv_score()
         return self._adv_score
+
+    @property
+    def control_mean_dist(self):
+        if self._control_mean_dist is None:
+            self._control_mean_dist = self.get_control_mean_dist()
+        return self._control_mean_dist
+
+    def get_control_mean_dist(self):
+        scores = {}
+        means = []
+        for file in self.get_files():
+            parser = Parser(file)
+            means.append(np.average(parser.rtts_control.rtts()[0]))
+        return means
+        pass
 
 
 def is_non_zero_file(fpath):

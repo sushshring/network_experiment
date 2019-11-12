@@ -14,7 +14,7 @@ from parser.rtt import Rtt, RTTTYPE
 matplotlib.use('Qt5Agg')
 matplotlib.rc('xtick', labelsize=16)
 matplotlib.rc('ytick', labelsize=16)
-matplotlib.rcParams.update({'font.size': 30})
+matplotlib.rcParams.update({'font.size': 20})
 # matplotlib.use('pgf')
 import matplotlib.pyplot as plt
 # plt.rcParams.update({
@@ -111,8 +111,8 @@ class Analyzer:
         :type full_histogram: bool Print the full histogram instead of two separate histograms based on whether the
         flooder was on or off
         """
-        rtts, rtts_w_flooder, rtts_wo_flooder = self.data.normalized(rtt_type=RTTTYPE.ALL), self.data.normalized(
-            rtt_type=RTTTYPE.WITH), self.data.normalized(rtt_type=RTTTYPE.WITHOUT)
+        rtts, rtts_w_flooder, rtts_wo_flooder = self.data.non_normalized(rtt_type=RTTTYPE.ALL), self.data.non_normalized(
+            rtt_type=RTTTYPE.WITH), self.data.non_normalized(rtt_type=RTTTYPE.WITHOUT)
         if remove_outliers:
             if outliers_mode == OutliersFilterMode.PERCENTAGE:
                 rtts = Analyzer._remove_outliers_pct(rtts)
@@ -208,8 +208,8 @@ class Analyzer:
                """
         ax.set_ylabel('Frequency')
         ax.set_xlabel('Normalized Request RTT')
-        rtts, rtts_w_flooder, rtts_wo_flooder = self.control.normalized(rtt_type=RTTTYPE.ALL), self.control.normalized(
-            rtt_type=RTTTYPE.WITH), self.control.normalized(rtt_type=RTTTYPE.WITHOUT)
+        rtts, rtts_w_flooder, rtts_wo_flooder = self.control.non_normalized(rtt_type=RTTTYPE.ALL), self.control.non_normalized(
+            rtt_type=RTTTYPE.WITH), self.control.non_normalized(rtt_type=RTTTYPE.WITHOUT)
         if remove_outliers:
             if outliers_mode == OutliersFilterMode.PERCENTAGE:
                 rtts = Analyzer._remove_outliers_pct(rtts)
@@ -235,6 +235,7 @@ class Analyzer:
             ax.hist(rtts_wo_flooder, color='Blue', bins=1000,
                     alpha=0.5, label='Round trip time without flooder')
         ax.legend()
+        ax.ticklabel_format(axis='x', style='sci', useMathText=True)
         # ax.set_title('RTT histogram with control', fontsize=18)
 
     def get_cr_detection_score(self):
@@ -311,7 +312,7 @@ class Analyzer:
 
     def get_comparison_rtts(self, rtt_type=RTTTYPE.ALL):
         rtts = Analyzer._remove_outliers_pct(Analyzer._filter_data(
-            self.data.normalized(rtt_type)), lower=1, upper=99)
-        rtts_control = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.control.normalized(rtt_type)), lower=1,
+            self.data.non_normalized(rtt_type)), lower=1, upper=99)
+        rtts_control = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.control.non_normalized(rtt_type)), lower=1,
                                                      upper=99)
         return rtts, rtts_control

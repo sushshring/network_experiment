@@ -14,6 +14,8 @@ scipy = "*"
 matplotlib = "*"
 pyqt5 = "*"
 sklearn = "*"
+pygments = "*"
+statsmodels = "*"
 
 [requires]
 python_version = "3.7"

@@ -6,11 +6,12 @@ from matplotlib import lines
 from matplotlib import pyplot as plt
 import argparse
 import sys
+import pickle
 
 @plotter('Adv score')
-def main(with_cr_globber: str, without_cr_globber: str, threshold: int, ax: Axes):
-    with_cr_orchestration_platform = OrchestrationPlatform("K8 with Co-residency and separation", "quad", with_cr_globber)
-    without_cr_orchestration_platform = OrchestrationPlatform("K8 without Co-residency and separation", "quad", without_cr_globber)
+def main(with_cr_globber: str, without_cr_globber: str, threshold: int, experimental_run: str, ax: Axes):
+    with_cr_orchestration_platform = OrchestrationPlatform("K8 with Co-residency and separation", "quad", with_cr_globber, False)
+    without_cr_orchestration_platform = OrchestrationPlatform("K8 without Co-residency and separation", "quad", without_cr_globber, False)
 
     mse_hist_withcr = [x[1] for x in with_cr_orchestration_platform.adv_score.values()]
     mse_hist_withoutcr = [x[1] for x in without_cr_orchestration_platform.adv_score.values()]
@@ -31,6 +32,7 @@ def main(with_cr_globber: str, without_cr_globber: str, threshold: int, ax: Axes
     plot_roc(tps, fps)
     tp = len([x for x in mse_hist_withcr if x > threshold]) / len(mse_hist_withcr)
     tn = len([x for x in mse_hist_withoutcr if x <= threshold]) / len(mse_hist_withoutcr)
+    pickle.dump((tps, fps), open('../data/roc/%s.p' % experimental_run, "wb"))
 
     print("True positive: {:.2f}, false positive: {:.2f}, true negative: {:.2f}, false negative: {:.2f}".format(tp, 1 - tn, tn,1 - tp))
     plt.show()
@@ -38,6 +40,8 @@ def main(with_cr_globber: str, without_cr_globber: str, threshold: int, ax: Axes
 @plotter('ROC Curve')
 def plot_roc(tps, fps, ax):
     ax.plot(fps, tps)
+    ax.set_xlabel("False Positives")
+    ax.set_ylabel("True Positives")
     pass
 
 @plotter('Adv scores timeline')
@@ -55,5 +59,6 @@ if __name__ == '__main__':
     parser.add_argument('with_cr_globber', metavar='crglobber', type=str, help='file glob pattern to match all data files for the run with co-resident flooder')
     parser.add_argument('without_cr_globber', metavar='ncrglobber', type=str, help='file glob pattern to match all data files for the run without co-resident flooder')
     parser.add_argument('--threshold', metavar='threshold', type=int, default=1000)
+    parser.add_argument('experiment_run', metavar='experimentalrun', type=str)
     args = parser.parse_args()
-    main(args.with_cr_globber, args.without_cr_globber, args.threshold)
+    main(args.with_cr_globber, args.without_cr_globber, args.threshold, args.experiment_run)
