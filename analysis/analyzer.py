@@ -152,7 +152,7 @@ class Analyzer:
                 rtts = Analyzer._filter_data(data)
             else:
                 rtts = Analyzer._remove_outliers_mode(data)
-            rtts = rtts/1000000
+            rtts = [i/1000000 for i in rtts]
             ax.plot(rtts, color='black')
         else:
             rtts, rtts_w_flooder, rtts_wo_flooder = self.data.rtts_with_start_times()
@@ -179,7 +179,7 @@ class Analyzer:
                 rtts = Analyzer._filter_data(data)
             else:
                 rtts = Analyzer._remove_outliers_mode(data)
-            rtts = rtts/1000000
+            rtts = [i/1000000 for i in rtts]
             ax.plot(rtts, color='black')
         else:
             rtts, rtts_w_flooder, rtts_wo_flooder = self.control.rtts_with_start_times()
@@ -312,7 +312,7 @@ class Analyzer:
 
     def get_comparison_rtts(self, rtt_type=RTTTYPE.ALL):
         rtts = Analyzer._remove_outliers_pct(Analyzer._filter_data(
-            self.data.non_normalized(rtt_type)), lower=1, upper=99)
+            self.data.non_normalized(rtt_type)), lower=1, upper=95)
         rtts_control = Analyzer._remove_outliers_pct(Analyzer._filter_data(self.control.non_normalized(rtt_type)), lower=1,
                                                      upper=99)
         return rtts, rtts_control
