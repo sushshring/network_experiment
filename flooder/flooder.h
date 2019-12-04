@@ -32,7 +32,7 @@ extern struct timespec tstart;
 // Inputs       : port: Port of the flooder for TCP connections
 //                flooder_type: Type of the flooder. 1: self loop. 2: packet-sink
 // Outputs      : socketfh if successful, -1 if failure
-flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, double scale, int with_control);
+flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, double scale, int with_control, int flooder_type);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -45,4 +45,6 @@ int flooder_run(flooder_socks *);
 void log_request_start();
 
 void * flooder_test_connection(const int *socket_fd);
+
+void spin(int seconds);
 #endif //CLIENT_flooder_H

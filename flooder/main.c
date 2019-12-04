@@ -14,13 +14,14 @@
 #include <cmpsc311_util.h>
 #include "flooder.h"
 
-#define FLOODER_ARGUMENTS "hvl:s:t:c"
+#define FLOODER_ARGUMENTS "hvnl:s:t:c"
 #define USAGE \
-  "USAGE: flooder [-h] [-v] [-c] [-l <logfile>] [-t <flooder-type>] [-s <scale-factor>] <packet-sink-address> <packet-sink-port> <client-address> <client-port>\n" \
+  "USAGE: flooder [-h] [-v] [-n] [-c] [-l <logfile>] [-t <flooder-type>] [-s <scale-factor>] <packet-sink-address> <packet-sink-port> <client-address> <client-port>\n" \
   "\n" \
   "where:\n" \
   "    -h - help mode (display this message)\n" \
   "    -v - verbose output\n" \
+  "    -n - Ignore all scaling and do not run any flooding. Will force the flooder to use spin wait instead of sleep" \
   "    -l - write log messages to the filename <logfile>\n" \
   "    -t - Type of flooder. 1: Self loop; 2: packet sink\n" \
   "    -s - Scale factor to adjust flooding size\n" \
@@ -58,6 +59,8 @@ int main(int argc, char *argv[]) {
       case 'c':
         with_control = 1;
         break;
+      case 'n':
+        flooder_type = -1;
       case 'l':
         initializeLogWithFilename(optarg);
         log_initialized = 1;
@@ -87,7 +90,7 @@ int main(int argc, char *argv[]) {
     return ( -1 );
   }
 
-  if (( socks = flooder_create(argv[optind], atoi(argv[optind + 1]), argv[optind+2], atoi(argv[optind + 3]), flooder_scale, with_control)) == NULL ) {
+  if (( socks = flooder_create(argv[optind], atoi(argv[optind + 1]), argv[optind+2], atoi(argv[optind + 3]), flooder_scale, with_control, flooder_type)) == NULL ) {
     logMessage(LOG_ERROR_LEVEL, "flooder failed to connect\n");
     return ( -1 );
   }

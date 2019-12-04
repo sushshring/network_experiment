@@ -5,8 +5,8 @@
 #include <sys/socket.h>
 #include "flooder.h"
 struct timespec tstart = {0, 0};
-
-flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, double scale, int with_control)
+int flooder_no_flood = 0;
+flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, double scale, int with_control, int flooder_type)
 {
   //
   //
@@ -14,6 +14,10 @@ flooder_socks *flooder_create(char *addr, int port, char *client_addr, int clien
   //
   //
   flooder_socks *socks = malloc(sizeof(flooder_socks));
+  if (flooder_type == -1)
+  {
+    flooder_no_flood = 1;
+  }
   pthread_t flooder_check;
   socks->scale = scale;
   socks->with_control = with_control;
@@ -84,7 +88,14 @@ int flooder_run(flooder_socks *socks)
   start_time = clock.tv_sec;
   while (1)
   {
-    sleep(5);
+    if (flooder_no_flood)
+    {
+      spin(5);
+    }
+    else
+    {
+      sleep(5);
+    }
     logMessage(LOG_INFO_LEVEL, "Notifying start to client\n");
     write(socks->client_sock, client_start, 6);
     clock_gettime(CLOCK_MONOTONIC, &clock);
@@ -102,9 +113,23 @@ int flooder_run(flooder_socks *socks)
     }
     if (socks->with_control && notified_control)
     {
+      if (flooder_no_flood)
+      {
+        spin(5);
+      }
+      else
+      {
         sleep(5);
+      }
     }
-    else {
+    else
+    {
+      if (flooder_no_flood)
+      {
+        spin(5);
+      }
+      else
+      {
         while (currenttime < clocktime + 5)
         {
           if (write(socks->udp_sock, rbuf, data_size) == -1)
@@ -119,6 +144,7 @@ int flooder_run(flooder_socks *socks)
           clock_gettime(CLOCK_MONOTONIC, &clock);
           currenttime = clock.tv_sec;
         }
+      }
     }
     logMessage(LOG_INFO_LEVEL, "Notifying end to client\n");
     write(socks->client_sock, client_end, 6);
@@ -133,4 +159,18 @@ void log_request_start()
   char msg[128];
   sprintf(msg, "START: %ld\n", BILLION * tstart.tv_sec + tstart.tv_nsec);
   write(timing_logfh, msg, strlen(msg));
+}
+
+void spin(int seconds)
+{
+  time_t clocktime, currenttime, start_time;
+  struct timespec clock = {0, 0};
+  clock_gettime(CLOCK_MONOTONIC, &clock);
+  clocktime = clock.tv_sec;
+  currenttime = clocktime;
+  while (currenttime < clocktime + seconds)
+  {
+    clock_gettime(CLOCK_MONOTONIC, &clock);
+    currenttime = clock.tv_sec;
+  }
 }
