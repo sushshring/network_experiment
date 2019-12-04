@@ -65,9 +65,6 @@ int main(int argc, char *argv[]) {
         initializeLogWithFilename(optarg);
         log_initialized = 1;
         break;
-      case 't':
-        flooder_type = atoi(optarg);
-        break;
       case 's':
         flooder_scale = atof(optarg);
         break;
