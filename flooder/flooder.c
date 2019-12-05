@@ -6,7 +6,7 @@
 #include "flooder.h"
 struct timespec tstart = {0, 0};
 int flooder_no_flood = 0;
-flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, double scale, int with_control, int flooder_type)
+flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, double scale, int with_control, int flooder_type, double flooder_duration)
 {
   //
   //
@@ -21,6 +21,7 @@ flooder_socks *flooder_create(char *addr, int port, char *client_addr, int clien
   pthread_t flooder_check;
   socks->scale = scale;
   socks->with_control = with_control;
+  socks->duration = flooder_duration;
   logMessage(LOG_INFO_LEVEL, "Writing to UDP socket: %s:%d", addr, port);
   if ((socks->udp_sock = cmpsc311_client_connect_udp((unsigned char *)addr, (unsigned short)port)) == -1)
   {
@@ -90,11 +91,11 @@ int flooder_run(flooder_socks *socks)
   {
     if (flooder_no_flood)
     {
-      spin(5);
+      spin(socks->duration);
     }
     else
     {
-      sleep(5);
+      sleep(socks->duration);
     }
     logMessage(LOG_INFO_LEVEL, "Notifying start to client\n");
     write(socks->client_sock, client_start, 6);
@@ -115,22 +116,22 @@ int flooder_run(flooder_socks *socks)
     {
       if (flooder_no_flood)
       {
-        spin(5);
+        spin(socks->duration);
       }
       else
       {
-        sleep(5);
+        sleep(socks->duration);
       }
     }
     else
     {
       if (flooder_no_flood)
       {
-        spin(5);
+        spin(socks->duration);
       }
       else
       {
-        while (currenttime < clocktime + 5)
+        while (currenttime < clocktime + socks->duration)
         {
           if (write(socks->udp_sock, rbuf, data_size) == -1)
           {

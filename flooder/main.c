@@ -14,7 +14,7 @@
 #include <cmpsc311_util.h>
 #include "flooder.h"
 
-#define FLOODER_ARGUMENTS "hvnl:s:t:c"
+#define FLOODER_ARGUMENTS "hvnl:s:d:c"
 #define USAGE \
   "USAGE: flooder [-h] [-v] [-n] [-c] [-l <logfile>] [-t <flooder-type>] [-s <scale-factor>] <packet-sink-address> <packet-sink-port> <client-address> <client-port>\n" \
   "\n" \
@@ -23,7 +23,7 @@
   "    -v - verbose output\n" \
   "    -n - Ignore all scaling and do not run any flooding. Will force the flooder to use spin wait instead of sleep" \
   "    -l - write log messages to the filename <logfile>\n" \
-  "    -t - Type of flooder. 1: Self loop; 2: packet sink\n" \
+  "    -d - Duration of flooding\n" \
   "    -s - Scale factor to adjust flooding size\n" \
   "    -c - Run with a control sequence where no flooding is performed after one minute\n" \
   "\n" \
@@ -44,7 +44,7 @@
 int main(int argc, char *argv[]) {
   // Local variables
   int ch, verbose = 0, log_initialized = 0, flooder_type = 1, with_control = 0;
-  double flooder_scale = 1;
+  double flooder_scale = 1, flooder_duration = 5;
   flooder_socks *socks;
 
   // Process command line parameters
@@ -64,6 +64,9 @@ int main(int argc, char *argv[]) {
       case 'l':
         initializeLogWithFilename(optarg);
         log_initialized = 1;
+        break;
+      case 'd':
+        flooder_duration = atof(optarg);
         break;
       case 's':
         flooder_scale = atof(optarg);
@@ -87,7 +90,7 @@ int main(int argc, char *argv[]) {
     return ( -1 );
   }
 
-  if (( socks = flooder_create(argv[optind], atoi(argv[optind + 1]), argv[optind+2], atoi(argv[optind + 3]), flooder_scale, with_control, flooder_type)) == NULL ) {
+  if (( socks = flooder_create(argv[optind], atoi(argv[optind + 1]), argv[optind+2], atoi(argv[optind + 3]), flooder_scale, with_control, flooder_type, flooder_duration)) == NULL ) {
     logMessage(LOG_ERROR_LEVEL, "flooder failed to connect\n");
     return ( -1 );
   }

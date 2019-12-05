@@ -20,6 +20,7 @@ typedef struct {
   int client_sock;
   double scale;
   int with_control;
+  int duration;
 } flooder_socks;
 // GLOBAL VARIABLES
 int timing_logfh;
@@ -32,7 +33,7 @@ extern struct timespec tstart;
 // Inputs       : port: Port of the flooder for TCP connections
 //                flooder_type: Type of the flooder. 1: self loop. 2: packet-sink
 // Outputs      : socketfh if successful, -1 if failure
-flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, double scale, int with_control, int flooder_type);
+flooder_socks *flooder_create(char *addr, int port, char *client_addr, int client_port, double scale, int with_control, int flooder_type, double flooder_duration);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
