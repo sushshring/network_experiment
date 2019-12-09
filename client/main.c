@@ -42,13 +42,13 @@ void *flooder_checks(void *flooder_fh)
     if (!cmpsc311_read_bytes(*(int *)flooder_fh, 28, (unsigned char *)msg))
     {
       logMessage(LOG_INFO_LEVEL, "Received flooder message", msg);
-      if (strncmp(msg, "START", 6) == 0)
+      if (strncmp(msg, "START", 5) == 0)
       {
         sscanf(msg, "START: %Ld", &time);
         len = asprintf(&output, "FLOODER_START: %020ld\n", time);
         write(timing_logfh, output, len);
       }
-      else if (strncmp(msg, "ENDIN", 6) == 0)
+      else if (strncmp(msg, "ENDIN", 5) == 0)
       {
         sscanf(msg, "ENDIN: %Ld", &time);
         len = asprintf(&output, "FLOODER_END: %020ld\n", time);
