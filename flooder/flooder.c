@@ -110,7 +110,7 @@ int flooder_run(flooder_socks *socks)
     if (socks->with_control && currenttime - start_time >= 60 && !notified_control)
     {
       logMessage(LOG_INFO_LEVEL, "Starting control sequence\n");
-      snprintf(client_control, 28, "CONTRO: %20l", BILLION * clock.tv_sec + clock.tv_nsec);
+      snprintf(client_control, 28, "CONTR: %20l", BILLION * clock.tv_sec + clock.tv_nsec);
       write(socks->client_sock, client_control, 28);
       notified_control = 1;
     }

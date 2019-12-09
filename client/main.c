@@ -34,14 +34,14 @@
 void *flooder_checks(void *flooder_fh)
 {
   const char *msg = malloc(28);
-  long long time = 0;
+  long time = 0;
   int len = 0;
   char *output = NULL;
   while (1)
   {
     if (!cmpsc311_read_bytes(*(int *)flooder_fh, 28, (unsigned char *)msg))
     {
-      logMessage(LOG_INFO_LEVEL, "Received flooder message", msg);
+      logMessage(LOG_INFO_LEVEL, "Received flooder message: %s", msg);
       if (strncmp(msg, "START", 5) == 0)
       {
         sscanf(msg, "START: %Ld", &time);
@@ -54,9 +54,9 @@ void *flooder_checks(void *flooder_fh)
         len = asprintf(&output, "FLOODER_END: %020ld\n", time);
         write(timing_logfh, output, len);
       }
-      else if (strncmp(msg, "CONTRO", 6) == 0)
+      else if (strncmp(msg, "CONTR", 5) == 0)
       {
-        sscanf(msg, "CONTRO: %Ld", &time);
+        sscanf(msg, "CONTR: %Ld", &time);
         len = asprintf(&output, "FLOODER_CONTROL: %020ld\n", time);
         write(timing_logfh, output, len);
         pthread_mutex_lock(&lock);
