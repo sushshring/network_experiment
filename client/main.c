@@ -47,12 +47,16 @@ void *flooder_checks(void *flooder_fh)
         sscanf(msg, "START: %ld", &time);
         len = asprintf(&output, "FLOODER_START: %020ld\n", time);
         write(timing_logfh, output, len);
+        free(output);
+        output = NULL;
       }
       else if (strncmp(msg, "ENDIN", 5) == 0)
       {
         sscanf(msg, "ENDIN: %ld", &time);
         len = asprintf(&output, "FLOODER_END: %020ld\n", time);
         write(timing_logfh, output, len);
+        free(output);
+        output = NULL;
       }
       else if (strncmp(msg, "CONTR", 5) == 0)
       {
@@ -62,6 +66,8 @@ void *flooder_checks(void *flooder_fh)
         pthread_mutex_lock(&lock);
         flooder_state = 1;
         pthread_mutex_unlock(&lock);
+        free(output);
+        output = NULL;
       }
     }
     free(msg);
@@ -110,6 +116,7 @@ int main(int argc, char *argv[])
   {
     enableLogLevels(LOG_INFO_LEVEL);
   }
+  setEchoDescriptor(fileno(stdout));
   // The server address should be the next option
   if (optind >= argc)
   {
