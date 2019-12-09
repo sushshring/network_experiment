@@ -11,6 +11,8 @@
 // End CLION imports
 #include <cmpsc311_log.h>
 #include <unistd.h>
+#define _GNU_SOURCE
+#include <stdio.h>
 #include "client.h"
 #include <cmpsc311_util.h>
 
