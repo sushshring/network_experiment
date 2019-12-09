@@ -67,9 +67,9 @@ int flooder_run(flooder_socks *socks)
   //
   int data_size = BLOCK_SIZE * socks->scale;
   char *rbuf = malloc(data_size);
-  char client_start[28] = "START: %020ld";
-  char client_end[28] = "ENDIN: %020ld";
-  char client_control[28] = "CONTRO: %020ld";
+  char *client_start = malloc(28);
+  char *client_end = malloc(28);
+  char *client_control = malloc(28);
   int rfh, notified_control = 0;
   time_t clocktime, currenttime, start_time;
   struct timespec clock = {0, 0};
@@ -101,7 +101,7 @@ int flooder_run(flooder_socks *socks)
     clock_gettime(CLOCK_REALTIME, &clock);
     clocktime = clock.tv_sec;
     currenttime = clocktime;
-    snprintf(client_start, 28, BILLION * clock.tv_sec + clock.tv_nsec);
+    snprintf(client_start, 28, "START: %20l", BILLION * clock.tv_sec + clock.tv_nsec);
     write(socks->client_sock, client_start, 28);
     logMessage(LOG_INFO_LEVEL, "Running flooder\n");
     log_request_start();
@@ -110,7 +110,7 @@ int flooder_run(flooder_socks *socks)
     if (socks->with_control && currenttime - start_time >= 60 && !notified_control)
     {
       logMessage(LOG_INFO_LEVEL, "Starting control sequence\n");
-      snprintf(client_control, 28, BILLION * clock.tv_sec + clock.tv_nsec);
+      snprintf(client_control, 28, "CONTRO: %20l", BILLION * clock.tv_sec + clock.tv_nsec);
       write(socks->client_sock, client_control, 28);
       notified_control = 1;
     }
@@ -150,7 +150,7 @@ int flooder_run(flooder_socks *socks)
       }
     }
     logMessage(LOG_INFO_LEVEL, "Notifying end to client\n");
-    snprintf(client_end, 28, BILLION * clock.tv_sec + clock.tv_nsec);
+    snprintf(client_end, 28, "ENDIN: %20l", BILLION * clock.tv_sec + clock.tv_nsec);
     write(socks->client_sock, client_end, 28);
     logMessage(LOG_INFO_LEVEL, "Tried to send %ld, sent %ld\n", send_bytes, sent_bytes);
   }
