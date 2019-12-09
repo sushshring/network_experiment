@@ -23,7 +23,7 @@ int client_connect(unsigned char *server_addr, uint16_t port)
   }
 
   // Setup timing log
-  if ((timing_logfh = open(TIME_LOG_NAME, O_APPEND | O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR)) ==
+  if ((timing_logfh = open(TIME_LOG_NAME, O_TRUNC | O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR)) ==
       -1)
   {
     // Error out

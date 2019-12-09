@@ -53,7 +53,6 @@ void *flooder_checks(void *flooder_fh)
         sscanf(msg, "ENDIN: %Ld", &time);
         len = asprintf(&output, "FLOODER_END: %020ld\n", time);
         write(timing_logfh, output, len);
-        write(timing_logfh, "FLOODER_END\n", 12);
       }
       else if (strncmp(msg, "CONTRO", 6) == 0)
       {
