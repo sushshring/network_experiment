@@ -44,19 +44,19 @@ void *flooder_checks(void *flooder_fh)
       logMessage(LOG_INFO_LEVEL, "Received flooder message: %s", msg);
       if (strncmp(msg, "START", 5) == 0)
       {
-        sscanf(msg, "START: %Ld", &time);
+        sscanf(msg, "START: %ld", &time);
         len = asprintf(&output, "FLOODER_START: %020ld\n", time);
         write(timing_logfh, output, len);
       }
       else if (strncmp(msg, "ENDIN", 5) == 0)
       {
-        sscanf(msg, "ENDIN: %Ld", &time);
+        sscanf(msg, "ENDIN: %ld", &time);
         len = asprintf(&output, "FLOODER_END: %020ld\n", time);
         write(timing_logfh, output, len);
       }
       else if (strncmp(msg, "CONTR", 5) == 0)
       {
-        sscanf(msg, "CONTR: %Ld", &time);
+        sscanf(msg, "CONTR: %ld", &time);
         len = asprintf(&output, "FLOODER_CONTROL: %020ld\n", time);
         write(timing_logfh, output, len);
         pthread_mutex_lock(&lock);
