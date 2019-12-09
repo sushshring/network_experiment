@@ -33,12 +33,12 @@
 
 void *flooder_checks(void *flooder_fh)
 {
-  const char *msg = malloc(28);
   long time = 0;
   int len = 0;
   char *output = NULL;
   while (1)
   {
+    const char *msg = malloc(28);
     if (!cmpsc311_read_bytes(*(int *)flooder_fh, 28, (unsigned char *)msg))
     {
       logMessage(LOG_INFO_LEVEL, "Received flooder message: %s", msg);
@@ -64,6 +64,7 @@ void *flooder_checks(void *flooder_fh)
         pthread_mutex_unlock(&lock);
       }
     }
+    free(msg);
   }
 }
 
