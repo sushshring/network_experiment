@@ -6,7 +6,7 @@ from typing import Iterable, TextIO
 from matplotlib.axes import Axes
 
 from analyzer import Analyzer, plotter
-from parser.data_parser import Parser
+from parsing.data_parser import Parser
 import numpy as np
 
 
@@ -18,7 +18,8 @@ class OrchestrationPlatform:
         self.flooding_level = flooding_level
         self.sample = sample
         if glob is None:
-            self.glob = '../data/%s/client_times_%s_%s_intf_control_*' % (self.name, self.name, self.flooding_level)
+            self.glob = '../data/%s/client_times_%s_%s_intf_control_*' % (
+                self.name, self.name, self.flooding_level)
         else:
             self.glob = glob
 
@@ -39,7 +40,7 @@ class OrchestrationPlatform:
     def get_adv_score(self):
         scores = {}
         if os.getenv('MP_ENABLE', False):
-            p = multiprocessing.Pool(processes = multiprocessing.cpu_count()-1)
+            p = multiprocessing.Pool(processes=multiprocessing.cpu_count()-1)
             scors = p.map(self.parse_file, glob(self.glob))
             for i, file in enumerate(self.get_files()):
                 scores[file.name] = scors[i]
@@ -60,7 +61,8 @@ class OrchestrationPlatform:
         scores = zip(*self.adv_score.values())
         for score in scores:
             ax.hist(score, alpha=0.5, label=self.name)
-        ax.set_title('Adversarial distribution for %s with %s flooding' % (self.name, self.flooding_level))
+        ax.set_title('Adversarial distribution for %s with %s flooding' %
+                     (self.name, self.flooding_level))
         ax.legend()
         pass
 

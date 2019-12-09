@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.7
 from orchestrationplatform import OrchestrationPlatform
-from analyzer import plotter
+from plotter import plotter
 from matplotlib.axes import Axes
 from matplotlib import pyplot as plt
 import numpy as np
@@ -8,30 +8,31 @@ import numpy as np
 base_folder = '../data/'
 orchestrator = 'flooder_sensitivity_blades_high_flooding'
 
+
 @plotter('Adversarial deception')
 def main(ax: Axes):
     none = OrchestrationPlatform(name='none', flooding_level='none', glob=('%s/*%s_intf_control_*') %
-            (base_folder+orchestrator, 'none'))
+                                 (base_folder+orchestrator, 'none'))
     ten = OrchestrationPlatform(name='ten', flooding_level='ten', glob=('%s/*%s_intf_control_*') %
-            (base_folder+orchestrator, 'ten'))
+                                (base_folder+orchestrator, 'ten'))
     twenty = OrchestrationPlatform(name='twenty', flooding_level='twenty', glob=('%s/*%s_intf_control_*')
-            % (base_folder+orchestrator, 'twenty'))
+                                   % (base_folder+orchestrator, 'twenty'))
     thirty = OrchestrationPlatform(name='thirty', flooding_level='thirty', glob=('%s/*%s_intf_control_*')
-            % (base_folder+orchestrator, 'thirty'))
+                                   % (base_folder+orchestrator, 'thirty'))
     forty = OrchestrationPlatform(name='forty', flooding_level='forty', glob=('%s/*%s_intf_control_*') %
-            (base_folder+orchestrator, 'forty'))
+                                  (base_folder+orchestrator, 'forty'))
     fifty = OrchestrationPlatform(name='fifty', flooding_level='fifty', glob=('%s/*%s_intf_control_*') %
-            (base_folder+orchestrator, 'fifty'))
+                                  (base_folder+orchestrator, 'fifty'))
     sixty = OrchestrationPlatform(name='sixty', flooding_level='sixty', glob=('%s/*%s_intf_control_*') %
-            (base_folder+orchestrator, 'sixty'))
+                                  (base_folder+orchestrator, 'sixty'))
     seventy = OrchestrationPlatform(name='seventy', flooding_level='seventy',
-            glob=('%s/*%s_intf_control_*') % (base_folder+orchestrator, 'seventy'))
+                                    glob=('%s/*%s_intf_control_*') % (base_folder+orchestrator, 'seventy'))
     eighty = OrchestrationPlatform(name='eighty', flooding_level='eighty', glob=('%s/*%s_intf_control_*')
-            % (base_folder+orchestrator, 'eighty'))
+                                   % (base_folder+orchestrator, 'eighty'))
     ninety = OrchestrationPlatform(name='ninety', flooding_level='ninety', glob=('%s/*%s_intf_control_*')
-            % (base_folder+orchestrator, 'ninety'))
+                                   % (base_folder+orchestrator, 'ninety'))
     full = OrchestrationPlatform(name='full', flooding_level='full', glob=('%s/*%s_intf_control_*') %
-            (base_folder+orchestrator, 'full'))
+                                 (base_folder+orchestrator, 'full'))
 
     data_dict = {
         0: none,
@@ -62,9 +63,11 @@ def main(ax: Axes):
     }
 
     for k in data_dict:
-        mse_values = [ i[1] for i in data_dict[k].get_adv_score().values()]
-        result_dict[k] = None if not len(mse_values) > 0 else len([i for i in mse_values if i > 60]) / len(mse_values)
-        ax.scatter([k for i in range(len(mse_values))], mse_values, label=data_dict[k].name, marker='o')
+        mse_values = [i[1] for i in data_dict[k].get_adv_score().values()]
+        result_dict[k] = None if not len(mse_values) > 0 else len(
+            [i for i in mse_values if i > 60]) / len(mse_values)
+        ax.scatter([k for i in range(len(mse_values))],
+                   mse_values, label=data_dict[k].name, marker='o')
         median = np.median(mse_values)
         mean = np.average(mse_values)
         ax.plot([k, k+10], [median, median])
@@ -78,6 +81,7 @@ def main(ax: Axes):
     print(result_dict)
     plt.show()
     pass
+
 
 if __name__ == '__main__':
     main()

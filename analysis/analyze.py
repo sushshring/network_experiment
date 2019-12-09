@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 from analyzer import Analyzer
-from parser.arg_parser import ArgParser
-from parser.data_parser import Parser
+from parsing.arg_parser import ArgParser
+from parsing.data_parser import Parser
 
 
 def main():

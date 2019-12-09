@@ -8,53 +8,9 @@ from scipy import stats, signal
 from sklearn.metrics import mean_squared_error
 from itertools import *
 from outliers_filter_mode import OutliersFilterMode
-from parser.arg_parser import ArgParser
-from parser.rtt import Rtt, RTTTYPE
-
-matplotlib.use('Qt5Agg')
-matplotlib.rc('xtick', labelsize=16)
-matplotlib.rc('ytick', labelsize=16)
-matplotlib.rcParams.update({'font.size': 20})
-# matplotlib.use('pgf')
-import matplotlib.pyplot as plt
-# plt.rcParams.update({
-#     # "pgf.texsystem": "pdflatex",
-#     "font.family": "serif",  # use serif/main font for text elements
-#     "text.usetex": True,     # use inline math for ticks
-#     "pgf.rcfonts": False,    # don't setup fonts from rc parameters
-#     "pgf.preamble": [
-#          "\\usepackage{unicode-math}",   # unicode math setup
-#          r"\setmainfont{DejaVu Serif}",  # serif font via preamble
-#          ]
-# })
-import matplotlib.ticker as mtick
-
-# np.set_printoptions(formatter={'float': lambda x: format(x, '6.3E')})
-
-class plotter:
-    def __init__(self, label: str):
-        self.label = label
-
-    def __call__(self, func):
-        def plot(*args, **kwargs):
-            ax = plotter.get_new_subplot(self.label)
-            ax.yaxis.grid(True)
-            return func(*args, **kwargs, ax=ax)
-
-        return plot
-
-    @staticmethod
-    def get_new_subplot(label: str) -> Axes:
-        n = len(plt.gcf().axes)
-        for i in range(n):
-            plt.gcf().axes[i].change_geometry(max(math.ceil(math.sqrt(n + 1)), 1),
-                                              max(round(math.sqrt(n + 1)), 1),
-                                              i + 1)
-        ax = plt.subplot(max(math.ceil(math.sqrt(n + 1)), 1),
-                         max(round(math.sqrt(n + 1)), 1),
-                         n + 1,
-                         label=label)
-        return ax
+from parsing.arg_parser import ArgParser
+from parsing.rtt import Rtt, RTTTYPE
+from plotter import plotter
 
 
 class Analyzer:
@@ -196,7 +152,6 @@ class Analyzer:
         # ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.0e'))
         ax.ticklabel_format(axis='y', style='sci', useMathText=True)
 
-
     @plotter('Histogram with control')
     def plot_histogram_control(self, full_histogram: bool, remove_outliers: bool, outliers_mode: OutliersFilterMode,
                                ax: Axes):
@@ -259,14 +214,17 @@ class Analyzer:
         energy_distance = stats.energy_distance(hist, hist_control)
         kl_dist = stats.entropy(hist, hist_control)
 
-        rtts_watermarked, rtts_watermarked_control = self.get_comparison_rtts(rtt_type=RTTTYPE.WITH)
-        rtts_idling, rtts_idling_control = self.get_comparison_rtts(rtt_type=RTTTYPE.WITHOUT)
+        rtts_watermarked, rtts_watermarked_control = self.get_comparison_rtts(
+            rtt_type=RTTTYPE.WITH)
+        rtts_idling, rtts_idling_control = self.get_comparison_rtts(
+            rtt_type=RTTTYPE.WITHOUT)
         hist_watermarked, _ = np.histogram(rtts_watermarked, bins=1000)
         hist_idling, _ = np.histogram(rtts_idling, bins=1000)
-        hist_watermarked_control, _ = np.histogram(rtts_watermarked_control, bins=1000)
+        hist_watermarked_control, _ = np.histogram(
+            rtts_watermarked_control, bins=1000)
         hist_idling_control, _ = np.histogram(rtts_idling_control, bins=1000)
-        mse_score_hist = mean_squared_error(hist_watermarked, hist_idling) - mean_squared_error(hist_watermarked_control, hist_idling_control)
-
+        mse_score_hist = mean_squared_error(
+            hist_watermarked, hist_idling) - mean_squared_error(hist_watermarked_control, hist_idling_control)
 
         # ax = plotter.get_new_subplot('Probabily densities') ax.plot(hist, 'r+') ax.plot(hist_control, 'b+') print(
         # 'mse score: %f, mse_score_hist: %f, wasserstein distance: %f, energy distance: %f, kl_distance: %f' %(

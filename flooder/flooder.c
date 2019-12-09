@@ -67,9 +67,9 @@ int flooder_run(flooder_socks *socks)
   //
   int data_size = BLOCK_SIZE * socks->scale;
   char *rbuf = malloc(data_size);
-  char client_start[6] = "START";
-  char client_end[6] = "ENDIN";
-  char client_control[6] = "CONTRO";
+  char client_start[28] = "START: %020ld";
+  char client_end[28] = "ENDIN: %020ld";
+  char client_control[28] = "CONTRO: %020ld";
   int rfh, notified_control = 0;
   time_t clocktime, currenttime, start_time;
   struct timespec clock = {0, 0};
@@ -85,7 +85,7 @@ int flooder_run(flooder_socks *socks)
     logMessage(LOG_ERROR_LEVEL, "Failed to read from /dev/urandom\n");
     return -1;
   }
-  clock_gettime(CLOCK_MONOTONIC, &clock);
+  clock_gettime(CLOCK_REALTIME, &clock);
   start_time = clock.tv_sec;
   while (1)
   {
@@ -98,10 +98,11 @@ int flooder_run(flooder_socks *socks)
       sleep(socks->duration);
     }
     logMessage(LOG_INFO_LEVEL, "Notifying start to client\n");
-    write(socks->client_sock, client_start, 6);
-    clock_gettime(CLOCK_MONOTONIC, &clock);
+    clock_gettime(CLOCK_REALTIME, &clock);
     clocktime = clock.tv_sec;
     currenttime = clocktime;
+    snprintf(client_start, 28, BILLION * clock.tv_sec + clock.tv_nsec);
+    write(socks->client_sock, client_start, 28);
     logMessage(LOG_INFO_LEVEL, "Running flooder\n");
     log_request_start();
     send_bytes = 0;
@@ -109,7 +110,8 @@ int flooder_run(flooder_socks *socks)
     if (socks->with_control && currenttime - start_time >= 60 && !notified_control)
     {
       logMessage(LOG_INFO_LEVEL, "Starting control sequence\n");
-      write(socks->client_sock, client_control, 6);
+      snprintf(client_control, 28, BILLION * clock.tv_sec + clock.tv_nsec);
+      write(socks->client_sock, client_control, 28);
       notified_control = 1;
     }
     if (socks->with_control && notified_control)
@@ -142,13 +144,14 @@ int flooder_run(flooder_socks *socks)
             sent_bytes += data_size;
           }
           send_bytes += data_size;
-          clock_gettime(CLOCK_MONOTONIC, &clock);
+          clock_gettime(CLOCK_REALTIME, &clock);
           currenttime = clock.tv_sec;
         }
       }
     }
     logMessage(LOG_INFO_LEVEL, "Notifying end to client\n");
-    write(socks->client_sock, client_end, 6);
+    snprintf(client_end, 28, BILLION * clock.tv_sec + clock.tv_nsec);
+    write(socks->client_sock, client_end, 28);
     logMessage(LOG_INFO_LEVEL, "Tried to send %ld, sent %ld\n", send_bytes, sent_bytes);
   }
   free(rbuf);
@@ -156,7 +159,7 @@ int flooder_run(flooder_socks *socks)
 
 void log_request_start()
 {
-  clock_gettime(CLOCK_MONOTONIC, &tstart);
+  clock_gettime(CLOCK_REALTIME, &tstart);
   char msg[128];
   sprintf(msg, "START: %ld\n", BILLION * tstart.tv_sec + tstart.tv_nsec);
   write(timing_logfh, msg, strlen(msg));
@@ -166,12 +169,12 @@ void spin(int seconds)
 {
   time_t clocktime, currenttime, start_time;
   struct timespec clock = {0, 0};
-  clock_gettime(CLOCK_MONOTONIC, &clock);
+  clock_gettime(CLOCK_REALTIME, &clock);
   clocktime = clock.tv_sec;
   currenttime = clocktime;
   while (currenttime < clocktime + seconds)
   {
-    clock_gettime(CLOCK_MONOTONIC, &clock);
+    clock_gettime(CLOCK_REALTIME, &clock);
     currenttime = clock.tv_sec;
   }
 }

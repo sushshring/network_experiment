@@ -1,5 +1,6 @@
+#!/usr/bin/env python
 from typing import TextIO, List, Tuple
-from parser.rtt import Rtt
+from parsing.rtt import Rtt
 
 
 class Parser:
@@ -14,7 +15,8 @@ class Parser:
         self.parse()
 
     def parse(self):
-        rtts, rtts_w, rttw_wo, ctrlrtt, ctrl_rttw, ctrl_rttswo = self._parse_client_times(self.file)
+        rtts, rtts_w, rttw_wo, ctrlrtt, ctrl_rttw, ctrl_rttswo = self._parse_client_times(
+            self.file)
         self.rtts = Rtt(rtts, rtts_w, rttw_wo)
         self.rtts_control = Rtt(ctrlrtt, ctrl_rttw, ctrl_rttswo)
 
@@ -49,9 +51,12 @@ class Parser:
                 etime = float(line.split()[1])
                 rtt = etime - stime
                 datapt = ((stime - first_start) / (10 ** 9), rtt)
-                rtts.append(datapt) if not control else ctrl_rtts.append(datapt)
+                rtts.append(
+                    datapt) if not control else ctrl_rtts.append(datapt)
                 if flooder_on:
-                    rtts_w_flooder.append(datapt) if not control else ctrl_rtts_w_flooder.append(datapt)
+                    rtts_w_flooder.append(
+                        datapt) if not control else ctrl_rtts_w_flooder.append(datapt)
                 else:
-                    rtts_wo_flooder.append(datapt) if not control else ctrl_rtts_wo_flooder.append(datapt)
+                    rtts_wo_flooder.append(
+                        datapt) if not control else ctrl_rtts_wo_flooder.append(datapt)
         return rtts, rtts_w_flooder, rtts_wo_flooder, ctrl_rtts, ctrl_rtts_w_flooder, ctrl_rtts_wo_flooder

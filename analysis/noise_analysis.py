@@ -1,12 +1,12 @@
 #!/usr/bin/env python3.7
 from orchestrationplatform import OrchestrationPlatform
-from analyzer import plotter
+from plotter import plotter
 from matplotlib import pyplot as plt
 
 
 @plotter('')
 def main(ax):
-    data_dict = { 
+    data_dict = {
         0: OrchestrationPlatform('zero noise', 'quad', '../data/tcp_trace_noise_flooding/client_times_tcp_trace_noise_flooding_thirty_0x*', False),
         10: OrchestrationPlatform('1x noise', 'quad', '../data/tcp_trace_noise_flooding/client_times_tcp_trace_noise_flooding_thirty_1x*', False),
         20: OrchestrationPlatform('2x noise', 'quad', '../data/tcp_trace_noise_flooding/client_times_tcp_trace_noise_flooding_thirty_2x*', False),
@@ -48,10 +48,12 @@ def main(ax):
     plt.show()
     pass
 
+
 def get_succ(p: OrchestrationPlatform):
-    mse_values = [ i[1] for i in p.get_adv_score().values()]
+    mse_values = [i[1] for i in p.get_adv_score().values()]
     print(mse_values)
     return None if not len(mse_values) > 0 else len([i for i in mse_values if i > 800]) / len(mse_values)
+
 
 if __name__ == '__main__':
     main()
