@@ -132,4 +132,5 @@ int main(int argc, char *argv[])
   logMessage(LOG_INFO_LEVEL, "Client completed run\n");
   write(*fsock, "\n", 1);
   close(*fsock);
+  close(timing_logfh);
 }
