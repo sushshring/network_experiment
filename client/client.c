@@ -139,7 +139,6 @@ int client_send_request(int socketfh, int *request_counter)
     }
   }
   close(socketfh);
-  close(timing_logfh);
   free(marshallBuffer);
   return 0;
 }

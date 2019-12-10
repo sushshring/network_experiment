@@ -42,7 +42,10 @@ void *flooder_checks(void *flooder_fh)
     if (!cmpsc311_read_bytes(*(int *)flooder_fh, 38, (unsigned char *)msg))
     {
       logMessage(LOG_INFO_LEVEL, "Received flooder message: %s", msg);
-      write(timing_logfh, msg, 38);
+      if (write(timing_logfh, msg, 38) == -1)
+      {
+        logMessage(LOG_INFO_LEVEL, "Failed to write to file due to %s", strerror(errno));
+      }
       if (strncmp(msg, "FLOODER_CONTROL", 15) == 0)
       {
         pthread_mutex_lock(&lock);
