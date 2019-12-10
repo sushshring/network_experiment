@@ -38,36 +38,16 @@ void *flooder_checks(void *flooder_fh)
   char *output = NULL;
   while (1)
   {
-    const char *msg = malloc(28);
-    if (!cmpsc311_read_bytes(*(int *)flooder_fh, 28, (unsigned char *)msg))
+    const char *msg = malloc(39);
+    if (!cmpsc311_read_bytes(*(int *)flooder_fh, 39, (unsigned char *)msg))
     {
       logMessage(LOG_INFO_LEVEL, "Received flooder message: %s", msg);
-      if (strncmp(msg, "START", 5) == 0)
+      write(timing_logfh, msg, 39);
+      if (strncmp(msg, "FLOODER_CONTROL", 15) == 0)
       {
-        sscanf(msg, "START: %ld", &time);
-        len = asprintf(&output, "FLOODER_START: %020ld\n", time);
-        write(timing_logfh, output, len);
-        free(output);
-        output = NULL;
-      }
-      else if (strncmp(msg, "ENDIN", 5) == 0)
-      {
-        sscanf(msg, "ENDIN: %ld", &time);
-        len = asprintf(&output, "FLOODER_END: %020ld\n", time);
-        write(timing_logfh, output, len);
-        free(output);
-        output = NULL;
-      }
-      else if (strncmp(msg, "CONTR", 5) == 0)
-      {
-        sscanf(msg, "CONTR: %ld", &time);
-        len = asprintf(&output, "FLOODER_CONTROL: %020ld\n", time);
-        write(timing_logfh, output, len);
         pthread_mutex_lock(&lock);
         flooder_state = 1;
         pthread_mutex_unlock(&lock);
-        free(output);
-        output = NULL;
       }
     }
     free(msg);
