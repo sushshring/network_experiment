@@ -30,7 +30,7 @@
 #include "../common/ccommon.h"
 
 // GLOBAL VARIABLES
-int timing_logfh = -1;
+int timing_logfh;
 int flooder_state;
 pthread_mutex_t lock;
 extern struct timespec tstart;
