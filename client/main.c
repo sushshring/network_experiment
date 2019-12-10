@@ -44,7 +44,7 @@ void *flooder_checks(void *flooder_fh)
       logMessage(LOG_INFO_LEVEL, "Received flooder message: %s", msg);
       if (write(timing_logfh, msg, 38) == -1)
       {
-        logMessage(LOG_INFO_LEVEL, "Failed to write to file due to %s", strerror(errno));
+        logMessage(LOG_ERROR_LEVEL, "Failed to write to file due to %s", strerror(errno));
       }
       if (strncmp(msg, "FLOODER_CONTROL", 15) == 0)
       {
