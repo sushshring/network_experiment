@@ -5,7 +5,8 @@
 #ifndef NETWORK_EXPERIMENT_CLIENT_H
 #define NETWORK_EXPERIMENT_CLIENT_H
 #define FILENAME "large_file.txt"
-#define TIME_LOG_NAME "/var/log/client_times"
+#define TIME_LOG_NAME "./client_times"
+
 #define LAMBDA 0.1
 #define BILLION 1000000000L
 
