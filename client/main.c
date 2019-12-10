@@ -38,11 +38,11 @@ void *flooder_checks(void *flooder_fh)
   char *output = NULL;
   while (1)
   {
-    const char *msg = malloc(39);
-    if (!cmpsc311_read_bytes(*(int *)flooder_fh, 39, (unsigned char *)msg))
+    const char *msg = malloc(38);
+    if (!cmpsc311_read_bytes(*(int *)flooder_fh, 38, (unsigned char *)msg))
     {
       logMessage(LOG_INFO_LEVEL, "Received flooder message: %s", msg);
-      write(timing_logfh, msg, 39);
+      write(timing_logfh, msg, 38);
       if (strncmp(msg, "FLOODER_CONTROL", 15) == 0)
       {
         pthread_mutex_lock(&lock);
