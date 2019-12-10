@@ -112,7 +112,7 @@ int flooder_run(flooder_socks *socks)
     if (socks->with_control && currenttime - start_time >= 60 && !notified_control)
     {
       logMessage(LOG_INFO_LEVEL, "Starting control sequence\n");
-      len = asprintf(client_control, "FLOODER_CONTROL: %20l\n", BILLION * clock.tv_sec + clock.tv_nsec);
+      len = asprintf(&client_control, "FLOODER_CONTROL: %20l\n", BILLION * clock.tv_sec + clock.tv_nsec);
       write(socks->client_sock, client_control, len);
       free(client_control);
       client_control = NULL;
@@ -154,7 +154,7 @@ int flooder_run(flooder_socks *socks)
       }
     }
     logMessage(LOG_INFO_LEVEL, "Notifying end to client\n");
-    len = asprintf(client_end, "FLOODER_END:     %20l\n", BILLION * clock.tv_sec + clock.tv_nsec);
+    len = asprintf(&client_end, "FLOODER_END:     %20l\n", BILLION * clock.tv_sec + clock.tv_nsec);
     write(socks->client_sock, client_end, len);
     free(client_end);
     client_end = NULL;
