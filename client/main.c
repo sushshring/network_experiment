@@ -107,8 +107,17 @@ int main(int argc, char *argv[])
     fprintf(stderr, "Missing command line parameters, use -h to see usage, aborting.\n");
     return (-1);
   }
+    // Setup timing log
+  if ((timing_logfh = open(TIME_LOG_NAME, O_APPEND | O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR)) ==
+      -1)
+  {
+    // Error out
+    logMessage(LOG_ERROR_LEVEL, "Error opening log : %s (%s)", TIME_LOG_NAME, strerror(errno));
+    return (-1);
+  }
   pthread_mutex_init(&lock, NULL);
   flooder_state = 0;
+  
   logMessage(LOG_INFO_LEVEL, "Starting flooder socket\n");
   if ((flooder_sock = cmpsc311_connect_server(6001)) == -1)
   {
@@ -135,5 +144,5 @@ int main(int argc, char *argv[])
   logMessage(LOG_INFO_LEVEL, "Client completed run\n");
   write(*fsock, "\n", 1);
   close(*fsock);
-  sync();
+  close(timing_logfh);
 }

@@ -21,15 +21,6 @@ int client_connect(unsigned char *server_addr, uint16_t port)
     logMessage(LOG_ERROR_LEVEL, "Failed to connect to server\n");
     return (-1);
   }
-
-  // Setup timing log
-  if ((timing_logfh = open(TIME_LOG_NAME, O_TRUNC | O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR)) ==
-      -1)
-  {
-    // Error out
-    logMessage(LOG_ERROR_LEVEL, "Error opening log : %s (%s)", TIME_LOG_NAME, strerror(errno));
-    return (-1);
-  }
   return socketfh;
 }
 
