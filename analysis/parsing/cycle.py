@@ -2,6 +2,7 @@ from typing import List, Tuple
 import numpy as np
 from plotter import plotter
 from matplotlib.axes import Axes
+from matplotlib.lines import Line2D
 
 
 class Cycle:
@@ -26,11 +27,31 @@ class Cycle:
         rtts_w, rtts_wo = self.rtts()
         return np.divide(np.subtract(rtts_w, np.mean(rtts_w)), np.std(rtts_w)), np.divide(np.subtract(rtts_wo, np.mean(rtts_wo)), np.std(rtts_wo))
 
+    def score(self):
+        on, off = self.rtts()
+        if len(on) > 0 and len(off) > 0:
+            average_flooding_rtt = np.mean(on)
+            average_off_rtt = np.mean(off)
+            return average_flooding_rtt - average_off_rtt
+        return 0
+
     @plotter('Plot')
     def plot(self, ax: Axes):
-        rtts_w_flooder, rtts_wo_flooder = self.rtts()
-        ax.plot(rtts_w_flooder, label='Plot with flooder')
-        ax.plot(rtts_wo_flooder, label='Plot without flooder')
+        rtts, noflood = self.rtts_with_start_times()
+        if len(rtts) > 0 and len(noflood) > 0:
+            times_w_flooder, rtts_w_flooder = zip(*rtts)
+            times_wo_flooder, rtts_wo_flooder = zip(*noflood)
+            mintime = min(times_w_flooder + times_wo_flooder)
+            maxtime = max(times_w_flooder + times_wo_flooder)
+            withflooder_avgline = Line2D([mintime, maxtime], [
+                np.mean(rtts_w_flooder), np.mean(rtts_w_flooder)], color='Blue')
+            ax.plot(times_w_flooder, rtts_w_flooder, label='Plot with flooder')
+            ax.add_line(withflooder_avgline)
+            woflooder_avgline = Line2D([mintime, maxtime], [
+                np.mean(rtts_wo_flooder), np.mean(rtts_wo_flooder)], color='Orange')
+            ax.add_line(woflooder_avgline)
+            ax.plot(times_wo_flooder, rtts_wo_flooder,
+                    label='Plot without flooder')
         ax.legend()
         pass
 

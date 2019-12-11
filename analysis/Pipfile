@@ -16,6 +16,7 @@ pyqt5 = "*"
 sklearn = "*"
 pygments = "*"
 statsmodels = "*"
+sortedcontainers = "*"
 
 [requires]
 python_version = "3.7"

@@ -4,6 +4,7 @@ from typing import List
 import matplotlib
 import numpy as np
 from matplotlib.axes import Axes
+from matplotlib import pyplot as plt
 from scipy import stats, signal
 from sklearn.metrics import mean_squared_error
 from itertools import *
@@ -108,7 +109,7 @@ class Analyzer:
                 rtts = Analyzer._filter_data(data)
             else:
                 rtts = Analyzer._remove_outliers_mode(data)
-            rtts = [i/1000000 for i in rtts]
+            rtts = [i / 1000000 for i in rtts]
             ax.plot(rtts, color='black')
         else:
             rtts, rtts_w_flooder, rtts_wo_flooder = self.data.rtts_with_start_times()

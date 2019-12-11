@@ -9,19 +9,14 @@ class TestCycles(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(TestCycles, self).__init__(*args, **kwargs)
         self.data_file = open(
-            '../data/duration_sensitivity/client_times_duration_sensitivity_5s_intf_control_1252019_1135')
-
-    def test_parsing(self):
-        c = CycleParser(self.data_file)
-        assert len(c.cycles) == 3
-        assert len(c.cycles_control) == 3
+            '../data/new_data/duration_sensitivity_new_blades/client_times_duration_sensitivity_new_blades_5s_intf_control_12112019_1045')
 
     def test_plotting(self):
         c = CycleParser(self.data_file)
         for cycle in c.cycles:
             cycle.plot()
-        for cycle in c.cycles_control:
-            cycle.plot()
+        # for cycle in c.cycles_control:
+        #     cycle.plot()
         plt.show()
         pass
 

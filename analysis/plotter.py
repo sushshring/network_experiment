@@ -2,9 +2,9 @@
 import matplotlib
 import math
 matplotlib.use('Qt5Agg')
-matplotlib.rc('xtick', labelsize=16)
-matplotlib.rc('ytick', labelsize=16)
-matplotlib.rcParams.update({'font.size': 20})
+# matplotlib.rc('xtick', labelsize=16)
+# matplotlib.rc('ytick', labelsize=16)
+# matplotlib.rcParams.update({'font.size': 20})
 # matplotlib.use('pgf')
 # plt.rcParams.update({
 #     # "pgf.texsystem": "pdflatex",
