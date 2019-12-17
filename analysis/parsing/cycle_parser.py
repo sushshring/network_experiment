@@ -132,7 +132,7 @@ class CycleParser:
                 assert stime != 0
                 etime = int(line.split()[1])
                 rtt = etime - stime
-                sorted_times[etime] = rtt
+                sorted_times[etime] = rtt / 10**6
         return sorted_times
 
     @staticmethod
@@ -145,10 +145,13 @@ class CycleParser:
 
         flooder_on = None
         flooder_control = False
+        mark_cycle_start_time = False
+        cycle_start_time = 0
         for time, value in times.items():
             if value == "FLOODER_CONTROL":
                 flooder_control = True
             elif value == "FLOODER_START":
+                mark_cycle_start_time = True
                 if flooder_on is None:
                     flooder_on = True
                     continue
@@ -165,9 +168,14 @@ class CycleParser:
             if flooder_on is None:
                 continue
             if type(value) != str:
+                # if mark_cycle_start_time:
+                #     cycle_start_time = time
+                # mark_cycle_start_time = False
                 if flooder_on:
-                    flooding_cycle.append((time, value))
+                    flooding_cycle.append(
+                        ((time - cycle_start_time) / 10**9, value))
                 else:
-                    no_flooding_cycle.append((time, value))
+                    no_flooding_cycle.append(
+                        ((time - cycle_start_time) / 10**9, value))
         return cycles, control
         pass

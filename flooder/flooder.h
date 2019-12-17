@@ -21,6 +21,7 @@ typedef struct {
   double scale;
   int with_control;
   int duration;
+  int sleep_duration;
 } flooder_socks;
 // GLOBAL VARIABLES
 int timing_logfh;

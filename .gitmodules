@@ -1,7 +1,10 @@
 [submodule "data"]
-	path = data
+	path = data.nosync
 	url = https://github.com/sushshring/network-exp-data/
 	branch = master
 [submodule "k8_thesis"]
 	path = k8_thesis
 	url = https://git.overleaf.com/5d729677d17be90001ce0b9d
+[submodule "psu_thesis"]
+	path = psu_thesis
+	url = https://git.overleaf.com/5d838c8d21602500019213f4

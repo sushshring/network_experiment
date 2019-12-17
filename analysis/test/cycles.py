@@ -9,7 +9,7 @@ class TestCycles(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(TestCycles, self).__init__(*args, **kwargs)
         self.data_file = open(
-            '../data/new_data/duration_sensitivity_new_blades/client_times_duration_sensitivity_new_blades_5s_intf_control_12112019_1045')
+            '../data/new_data/duration_sensitivity_new_blades/client_times_duration_sensitivity_new_blades_2s_intf_control_12112019_1406')
 
     def test_plotting(self):
         c = CycleParser(self.data_file)

@@ -22,6 +22,7 @@ flooder_socks *flooder_create(char *addr, int port, char *client_addr, int clien
   socks->scale = scale;
   socks->with_control = with_control;
   socks->duration = flooder_duration;
+  socks->sleep_duration = 10;
   logMessage(LOG_INFO_LEVEL, "Writing to UDP socket: %s:%d", addr, port);
   if ((socks->udp_sock = cmpsc311_client_connect_udp((unsigned char *)addr, (unsigned short)port)) == -1)
   {
@@ -91,11 +92,11 @@ int flooder_run(flooder_socks *socks)
   {
     if (flooder_no_flood)
     {
-      spin(socks->duration);
+      spin(socks->sleep_duration);
     }
     else
     {
-      sleep(socks->duration);
+      sleep(socks->sleep_duration);
     }
     logMessage(LOG_INFO_LEVEL, "Notifying start to client\n");
     clock_gettime(CLOCK_REALTIME, &clock);
@@ -122,18 +123,18 @@ int flooder_run(flooder_socks *socks)
     {
       if (flooder_no_flood)
       {
-        spin(socks->duration);
+        spin(socks->sleep_duration);
       }
       else
       {
-        sleep(socks->duration);
+        sleep(socks->sleep_duration);
       }
     }
     else
     {
       if (flooder_no_flood)
       {
-        spin(socks->duration);
+        spin(socks->sleep_duration);
       }
       else
       {
