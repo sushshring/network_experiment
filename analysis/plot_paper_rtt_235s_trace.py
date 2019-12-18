@@ -2,7 +2,7 @@ from parsing.cycle_parser import CycleParser
 from parsing.cycle import Cycle
 from matplotlib import pyplot as plt
 from glob import glob
-glob3s = "../data/new_data/duration_sensitivity_new_blades/client_times_duration_sensitivity_new_blades_3s*"
+glob3s = "../data/new_data/duration_sensitivity_new_blades/client_times_duration_sensitivity_new_blades_3s_cooldown*"
 cycles3s = []
 for file in glob(glob3s):
     f = open(file)
@@ -11,7 +11,7 @@ for file in glob(glob3s):
 
 Cycle.plot_multiple(cycles3s)
 
-glob5s = "../data/new_data/duration_sensitivity_new_blades/client_times_duration_sensitivity_new_blades_5s*"
+glob5s = "../data/new_data/duration_sensitivity_new_blades/client_times_duration_sensitivity_new_blades_5s_cooldown*"
 
 cycles5s = []
 for file in glob(glob5s):

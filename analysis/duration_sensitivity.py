@@ -6,7 +6,9 @@ from orchestrationplatform import is_non_zero_file
 from typing import List
 from sys import maxsize
 import numpy as np
-times = ['2s', '3s', '4s', '5s', '6s', '7s', '8s', '9s', '10s']
+# times = ['2s', '3s', '4s', '5s', '6s', '7s', '8s', '9s', '10s']
+times = ['2s_cooldown', '3s_cooldown', '4s_cooldown', '5s_cooldown',
+         '6s_cooldown', '7s_cooldown', '8s_cooldown', '9s_cooldown', '10s_cooldown']
 
 
 def calculate_signals(directory: str):
@@ -16,9 +18,9 @@ def calculate_signals(directory: str):
     minnum = get_limiting_run_number(globs)
     for globstr in globs:
         cycles = get_cycles_for_data_files(globstr, minnum)
-        successful_cycles = [x for x in cycles if x.score() > 0]
+        successful_cycles = [x for x in cycles if x.score() and x.score() > 0]
         print('For glob {}, there were {} cycles that had successful detection. The amplitude is {}. Total possible cycles were {}'.format(
-            globstr, len(successful_cycles), np.abs(np.mean([x.score() for x in cycles])), len(cycles)))
+            globstr, len(successful_cycles), np.abs(np.mean([x.score() for x in cycles if x.score()])), len(cycles)))
     pass
 
 

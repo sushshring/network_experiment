@@ -73,11 +73,19 @@ class Cycle:
                 # , [-1, 0, 1], mode='same')
                 times_wo_flooder, rtts_wo_flooder = zip(*noflood)
                 rtts_wo_flooder = gaussian_filter(rtts_wo_flooder, 2)
+                mintime = min(times_w_flooder + times_wo_flooder)
+                maxtime = max(times_w_flooder + times_wo_flooder)
                 # , [-1, 0, 1], mode='same')
                 ax.plot(times_w_flooder, rtts_w_flooder,
                         label='Plot with flooder', color='Blue')
+                withflooder_avgline = Line2D([mintime, maxtime], [
+                    np.mean(rtts_w_flooder), np.mean(rtts_w_flooder)], color='Blue')
                 ax.plot(times_wo_flooder, rtts_wo_flooder,
                         label='Plot without flooder', color='Orange')
+                woflooder_avgline = Line2D([mintime, maxtime], [
+                    np.mean(rtts_wo_flooder), np.mean(rtts_wo_flooder)], color='Orange', label='Average RTT baseline')
+                ax.add_line(woflooder_avgline)
+                ax.add_line(withflooder_avgline)
 
     @staticmethod
     def __get_without_start_time(elements: List[Tuple[float, float]]) -> List[float]:
